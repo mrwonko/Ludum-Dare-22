@@ -44,6 +44,17 @@
 			<Add library="sfml-audio" />
 			<Add library="sfml-system" />
 		</Linker>
+		<Unit filename="Constants.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Helpers.cpp" />
+		<Unit filename="Helpers.h" />
+		<Unit filename="Level.cpp" />
+		<Unit filename="Level.h" />
+		<Unit filename="Object.cpp" />
+		<Unit filename="Object.h" />
+		<Unit filename="Player.cpp" />
+		<Unit filename="Player.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

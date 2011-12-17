@@ -1,19 +1,26 @@
 #include <SFML/Graphics.hpp>
+#include "Helpers.h"
+
+sf::RenderWindow g_Window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
 
 int main()
 {
-    sf::RenderWindow App(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game", sf::Style::Close);
-    while(App.IsOpened())
+    while(g_Window.IsOpened())
     {
         sf::Event ev;
-        while(App.PollEvent(ev))
+        while(g_Window.PollEvent(ev))
         {
             switch(ev.Type)
             {
             case sf::Event::Closed:
                 {
-                    App.Close();
+                    g_Window.Close();
                     break;
+                }
+            case sf::Event::Resized:
+                {
+                    //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
+                    SetViewPos(g_Window.GetView().GetCenter());
                 }
             case sf::Event::KeyPressed:
                 {
@@ -26,11 +33,11 @@ int main()
                 }
             }
         }
-        App.Clear();
+        g_Window.Clear();
 
         // render
 
-        App.Display();
+        g_Window.Display();
     }
     return 0;
 }
