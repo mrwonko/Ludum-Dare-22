@@ -42,11 +42,13 @@ int main()
         b2FixtureDef fdef;
         fdef.shape = &shape;
         fdef.density = 1.f; //used to calculate mass
-        fdef.friction = 0.3f;
+        fdef.friction = 0.5f;
         body->CreateFixture(&fdef); //no mass means: calculate
     }
+
     sfmlBox2DDebugDraw debugDraw;
     debugDraw.SetWorld(&world);
+    bool debugPhysics = false;
 
     SetViewPos(sf::Vector2f(0, 0));
 
@@ -71,7 +73,17 @@ int main()
             case sf::Event::KeyPressed:
                 {
                     // insert key code here
-                    break;
+                    switch(ev.Key.Code)
+                    {
+                    case sf::Keyboard::P:
+                        {
+                            debugPhysics = !debugPhysics;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                    }
                 }
             default:
                 {
@@ -83,7 +95,10 @@ int main()
 
         // render
 
-        g_Window.Draw(debugDraw);
+        if(debugPhysics)
+        {
+            g_Window.Draw(debugDraw);
+        }
 
         static const int32 velocityIterations = 6;
         static const int32 positionIterations = 2;

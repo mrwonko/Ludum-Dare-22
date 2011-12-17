@@ -12,6 +12,7 @@ sfmlBox2DDebugDraw::sfmlBox2DDebugDraw():
 {
     //ctor
     SetFlags(e_shapeBit | e_jointBit | e_aabbBit);
+    AppendFlags(e_centerOfMassBit);
 }
 
 sfmlBox2DDebugDraw::~sfmlBox2DDebugDraw()
@@ -56,7 +57,7 @@ namespace
 ///Draw a closed polygon provided in CCW order.
 void sfmlBox2DDebugDraw::DrawPolygon (const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
 {
-    mRenderer->SetColor(ConvertColor(color));
+    glColor3f(color.r, color.g, color.b);
     glBegin(GL_LINE_LOOP);
     for(int32 i = 0; i < vertexCount; ++i)
     {
@@ -86,8 +87,7 @@ static const int CIRCLE_ITERATIONS = 16;
 ///Draw a circle.
 void sfmlBox2DDebugDraw::DrawCircle (const b2Vec2 &center, float32 radius, const b2Color &color)
 {
-    mRenderer->SetColor(ConvertColor(color));
-    mRenderer->SaveGLStates();
+    glColor3f(color.r, color.g, color.b);
     glBegin(GL_LINE_LOOP);
     for(int32 i = 0; i < CIRCLE_ITERATIONS; ++i)
     {
@@ -105,7 +105,6 @@ void sfmlBox2DDebugDraw::DrawSolidCircle (const b2Vec2 &center, float32 radius, 
     sf::Color col = ConvertColor(color);
     col.a = 127;
     mRenderer->SetColor(col);
-    mRenderer->SetColor(col);
     mRenderer->Begin(sf::Renderer::TriangleFan);
     for(int32 i = 0; i < CIRCLE_ITERATIONS; ++i)
     {
@@ -119,8 +118,7 @@ void sfmlBox2DDebugDraw::DrawSolidCircle (const b2Vec2 &center, float32 radius, 
 ///Draw a line segment.
 void sfmlBox2DDebugDraw::DrawSegment (const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color)
 {
-    sf::Color col = ConvertColor(color);
-    mRenderer->SetColor(col);
+    glColor3f(color.r, color.g, color.b);
     glBegin(GL_LINES);
     ProcessVertex(ConvertVector(p1));
     ProcessVertex(ConvertVector(p2));
@@ -129,7 +127,8 @@ void sfmlBox2DDebugDraw::DrawSegment (const b2Vec2 &p1, const b2Vec2 &p2, const 
 
 void sfmlBox2DDebugDraw::DrawTransform (const b2Transform &xf)
 {
-    //whatever
+    static const b2Color col(1.f, 0.f, 0.f);
+    DrawSegment(xf.p, xf.p + 2 * b2Vec2(xf.q.c, xf.q.s), col);
 }
 
 void sfmlBox2DDebugDraw::ProcessVertex(const sf::Vector2f& pos)
