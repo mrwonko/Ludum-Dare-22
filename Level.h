@@ -5,18 +5,41 @@
 #include <list>
 #include "Player.h"
 #include "sfmlBox2DDebugDraw.h"
+#include "EventListener.h"
 #include <SFML/Graphics.hpp>
 
 class Object;
 
-class Level : public sf::Drawable
+class Level : public sf::Drawable, public EventListener
 {
     public:
-        Level();
+        Level(const unsigned int index);
         virtual ~Level();
+
+        /** \brief Loads the level (index set in constructor)
+            \return success
+        **/
+        const bool Load();
+
+        /** \brief Saves the level (index set in constructor)
+            \return success
+        **/
+        const bool Save();
+
+        const bool IsComplete() const;
 
         void Update(unsigned int deltaT_msec);
 
+        void AddObject(Object* obj)
+        {
+            mObjects.push_back(obj);
+        }
+
+        b2World& GetWorld() { return mWorld; }
+
+        virtual const bool ProcessEvent(const sf::Event& event);
+
+    private:
         /** \return success
             \param out_stream Stream to write into
         **/
@@ -27,22 +50,15 @@ class Level : public sf::Drawable
         **/
         const bool Deserialize(std::istream& stream);
 
-        void AddObject(Object* obj)
-        {
-            mObjects.push_back(obj);
-        }
-
-        b2World& GetWorld() { return mWorld; }
-
-    private:
-        // everything BUT THE PLAYER (although he's an object, too.)
-        std::list<Object*> mObjects;
-        Player mPlayer;
-        sfmlBox2DDebugDraw mDebugDraw;
-        b2World mWorld;
-
-        // SFML Rendering function
+        /// SFML Rendering function
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+
+        std::list<Object*> mObjects; ///< Everything but the player
+        Player mPlayer; ///< The Player
+        bool mDebugPhysics; ///< Show physics debug drawing? (toggle with P)
+        sfmlBox2DDebugDraw mDebugDraw; ///< Physics debug drawing
+        b2World mWorld; ///< Physical World
+        const unsigned int mIndex; ///< Which level is this?
 };
 
 #endif // LEVEL_H

@@ -1,15 +1,29 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include "Helpers.h"
+#include "Level.h"
+#include "EventListenerList.h"
 
-#include <Box2D/Box2D.h>
-#include "sfmlBox2DDebugDraw.h"
-
-sf::RenderWindow g_Window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
-bool g_debugPhysics = false;
+EventListenerList g_EventListeners;
 
 int main()
 {
+    int numLevels = GetLevelCount();
+    std::cout << "Found " << numLevels << " levels." << std::endl;
+
+    if(numLevels <= 0)
+    {
+        std::cerr << "No levels found!" << std::endl;
+        return 0;
+    }
+    int curLevelIndex = -1;
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
+
+    Level* curLevel = NULL;
+
+    /*
     b2Vec2 gravity(0.f, 10.f);
     b2World world(gravity);
     world.SetAllowSleeping(true);
@@ -50,69 +64,78 @@ int main()
 
     sfmlBox2DDebugDraw debugDraw;
     debugDraw.SetWorld(&world);
+    */
 
-    SetViewPos(sf::Vector2f(0, 0));
+    SetViewPos(window, sf::Vector2f(0, 0));
 
 
-    while(g_Window.IsOpened())
+    while(window.IsOpened())
     {
         sf::Event ev;
-        while(g_Window.PollEvent(ev))
+        while(window.PollEvent(ev))
         {
             switch(ev.Type)
             {
             case sf::Event::Closed:
                 {
-                    g_Window.Close();
+                    window.Close();
                     break;
                 }
             case sf::Event::Resized:
                 {
                     //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
-                    SetViewPos(g_Window.GetView().GetCenter());
-                }
-            case sf::Event::KeyPressed:
-                {
-                    // insert key code here
-                    switch(ev.Key.Code)
-                    {
-                    case sf::Keyboard::P:
-                        {
-                            g_debugPhysics = !g_debugPhysics;
-                        }
-                    default:
-                        {
-                            break;
-                        }
-                    }
+                    SetViewPos(window, window.GetView().GetCenter());
                 }
             default:
                 {
-                    break;
+                    g_EventListeners.ProcessEvent(ev);
                 }
             }
         }
-        unsigned int frametime = std::min(g_Window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
+        unsigned int frametime = std::min(window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
 
-        //game logic goes here
+        if(curLevel == NULL or curLevel->IsComplete())
+        {
+            if(curLevel != NULL)
+            {
+                g_EventListeners.Remove(curLevel);
+                delete curLevel;
+                curLevel = NULL;
+            }
+            ++curLevelIndex;
+            if(curLevelIndex < numLevels)
+            {
+                curLevel = new Level(curLevelIndex);
+                if(!curLevel->Load())
+                {
+                    window.Close();
+                    break;
+                }
+            }
+            else
+            {
+                window.Close();
+                break;
+            }
+        }
+        //todo: game logic goes here
 
         //TODO: delete
+        /*
         static const int32 velocityIterations = 6;
         static const int32 positionIterations = 2;
         world.Step( frametime / 1000.f, velocityIterations, positionIterations);
+        */
 
-        g_Window.Clear();
+        window.Clear();
 
+        //todo: rendering goes here
 
-        // render
-
-        if(g_debugPhysics)
-        {
-            g_Window.Draw(debugDraw);
-        }
-
-
-        g_Window.Display();
+        window.Display();
+    }
+    if(curLevel != NULL)
+    {
+        delete curLevel;
     }
     return 0;
 }

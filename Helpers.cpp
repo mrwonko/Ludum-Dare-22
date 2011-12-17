@@ -1,13 +1,34 @@
 #include <SFML/Graphics.hpp>
 #include "Helpers.h"
 #include "Constants.h"
+#include <fstream>
+#include <sstream>
 
-extern sf::RenderWindow g_Window;
-
-void SetViewPos(const sf::Vector2f& center)
+void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center)
 {
     //I could cache this by making it static but the viewsize might change?
-    sf::Vector2f viewSize(float(g_Window.GetWidth()) / g_Window.GetHeight() * GAMEFIELD_HEIGHT, GAMEFIELD_HEIGHT);
+    sf::Vector2f viewSize(float(window.GetWidth()) / window.GetHeight() * GAMEFIELD_HEIGHT, GAMEFIELD_HEIGHT);
     sf::View view(center, viewSize);
-    g_Window.SetView(view);
+    window.SetView(view);
+}
+
+unsigned int GetLevelCount()
+{
+    unsigned int count = 0;
+    while(true)
+    {
+        std::ifstream file(GetLevelName(count).c_str());
+        if(file.fail())
+        {
+            return count;
+        }
+        ++count;
+    }
+}
+
+const std::string GetLevelName(unsigned int index)
+{
+    std::stringstream levelname;
+    levelname << LEVEL_BASE_NAME << index << LEVEL_EXTENSION;
+    return levelname.str();
 }
