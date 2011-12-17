@@ -3,9 +3,6 @@
 #include <algorithm>
 #include "Helpers.h"
 #include "Level.h"
-#include "EventListenerList.h"
-
-EventListenerList g_EventListeners;
 
 int main()
 {
@@ -71,6 +68,7 @@ int main()
 
     while(window.IsOpened())
     {
+        //  Event Handling
         sf::Event ev;
         while(window.PollEvent(ev))
         {
@@ -88,17 +86,19 @@ int main()
                 }
             default:
                 {
-                    g_EventListeners.ProcessEvent(ev);
+                    if(curLevel)
+                    {
+                        curLevel->ProcessEvent(ev);
+                    }
                 }
             }
         }
-        unsigned int frametime = std::min(window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
 
+        //  Level changing
         if(curLevel == NULL or curLevel->IsComplete())
         {
             if(curLevel != NULL)
             {
-                g_EventListeners.Remove(curLevel);
                 delete curLevel;
                 curLevel = NULL;
             }
@@ -118,18 +118,17 @@ int main()
                 break;
             }
         }
-        //todo: game logic goes here
 
-        //TODO: delete
-        /*
-        static const int32 velocityIterations = 6;
-        static const int32 positionIterations = 2;
-        world.Step( frametime / 1000.f, velocityIterations, positionIterations);
-        */
+        assert(curLevel != NULL);
+
+        //  Game Logic
+        unsigned int frametime = std::min(window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
+        curLevel->Update(frametime);
+
+        //  Rendering
 
         window.Clear();
-
-        //todo: rendering goes here
+        window.Draw(*curLevel);
 
         window.Display();
     }

@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "StaticRect.h"
 
 Object::Object(Level* const level) :
     mLevel(level)
@@ -13,10 +14,14 @@ Object::~Object()
 
 Object* Object::Create(const std::string& type, Level * const level)
 {
-    if(type == "player")
+    if(type == "Player")
     {
         std::cerr << "Trying to deserialize player! (Player handled separately)" << std::endl;
         return NULL;
+    }
+    if(type == "StaticRect")
+    {
+        return new StaticRect(level);
     }
     return NULL;
 }

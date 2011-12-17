@@ -7,7 +7,7 @@
 void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center)
 {
     //I could cache this by making it static but the viewsize might change?
-    sf::Vector2f viewSize(float(window.GetWidth()) / window.GetHeight() * GAMEFIELD_HEIGHT, GAMEFIELD_HEIGHT);
+    sf::Vector2f viewSize(float(window.GetWidth()) / window.GetHeight() * Constants::GAMEFIELD_HEIGHT, Constants::GAMEFIELD_HEIGHT);
     sf::View view(center, viewSize);
     window.SetView(view);
 }
@@ -29,6 +29,6 @@ unsigned int GetLevelCount()
 const std::string GetLevelName(unsigned int index)
 {
     std::stringstream levelname;
-    levelname << LEVEL_BASE_NAME << index << LEVEL_EXTENSION;
+    levelname << Constants::LEVEL_BASE_NAME << index << Constants::LEVEL_EXTENSION;
     return levelname.str();
 }

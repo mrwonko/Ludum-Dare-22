@@ -26,3 +26,9 @@ const bool Player::Deserialize(std::istream& stream)
     //TODO: player deserialization
     return true;
 }
+
+const bool Player::ProcessEvent(const sf::Event& event)
+{
+    //todo: process events
+    return false;
+}

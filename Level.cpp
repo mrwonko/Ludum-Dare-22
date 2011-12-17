@@ -1,10 +1,7 @@
 #include "Level.h"
 #include "Helpers.h"
 #include "Object.h"
-#include "EventListenerList.h"
 #include <fstream>
-
-extern EventListenerList g_EventListeners;
 
 static const b2Vec2 gravity(0.f, 0.f);
 
@@ -12,9 +9,11 @@ Level::Level(const unsigned int index) :
     mPlayer(this),
     mDebugPhysics(false),
     mWorld(gravity),
-    mIndex(index)
+    mIndex(index),
+    mEditMode(false)
 {
     //ctor
+    mDebugDraw.SetWorld(&mWorld);
 }
 
 Level::~Level()
@@ -105,16 +104,31 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 
 const bool Level::ProcessEvent(const sf::Event& event)
 {
+    if(mEditMode)
+    {
+        //special editmode events - may overwrite base events (because they're handled first - they have priority.)
+    }
+    else
+    {
+        //gameplay events - disabled in edit mode
+    }
+    //events that are always handled, no matter if editmode is enabled
     if(event.Type == sf::Event::KeyPressed)
     {
-        #ifdef _DEBUG
-        if(event.Key.Code == sf::Keyboard::P)
+        //Physics Debug Toggle
+        //#ifdef _DEBUG //(Who cares if it's in release? May actually help track down bugs or something, leave it in.)
+        if(event.Key.Code == Constants::PHYSDEBUG_KEY)
         {
             mDebugPhysics = !mDebugPhysics;
             return true;
         }
-        #endif
-        return false;
+        //#endif
+        //Editmode Toggle
+        if(event.Key.Code == Constants::LEVELEDIT_KEY)
+        {
+            mEditMode = !mEditMode;
+            return true;
+        }
     }
     return false;
 }
@@ -139,4 +153,9 @@ const bool Level::IsComplete() const
 {
     //TODO
     return false;
+}
+
+void Level::Update(unsigned int deltaT_msec)
+{
+    mWorld.Step(deltaT_msec / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
 }

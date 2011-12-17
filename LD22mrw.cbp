@@ -46,10 +46,6 @@
 		<Unit filename="Constants.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="EventListener.cpp" />
-		<Unit filename="EventListener.h" />
-		<Unit filename="EventListenerList.cpp" />
-		<Unit filename="EventListenerList.h" />
 		<Unit filename="Helpers.cpp" />
 		<Unit filename="Helpers.h" />
 		<Unit filename="Level.cpp" />
@@ -58,6 +54,8 @@
 		<Unit filename="Object.h" />
 		<Unit filename="Player.cpp" />
 		<Unit filename="Player.h" />
+		<Unit filename="StaticRect.cpp" />
+		<Unit filename="StaticRect.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="sfmlBox2DDebugDraw.cpp" />
 		<Unit filename="sfmlBox2DDebugDraw.h" />

@@ -4,14 +4,17 @@
 #include <iostream>
 #include <list>
 #include "Player.h"
+#include "Constants.h"
 #include "sfmlBox2DDebugDraw.h"
-#include "EventListener.h"
 #include <SFML/Graphics.hpp>
 
 class Object;
 
-class Level : public sf::Drawable, public EventListener
+class Level : public sf::Drawable
 {
+    static const int PHYS_VELOCITY_ITERATIONS = 6;
+    static const int PHYS_POSITION_ITERATIONS = 2;
+
     public:
         Level(const unsigned int index);
         virtual ~Level();
@@ -37,7 +40,7 @@ class Level : public sf::Drawable, public EventListener
 
         b2World& GetWorld() { return mWorld; }
 
-        virtual const bool ProcessEvent(const sf::Event& event);
+        const bool ProcessEvent(const sf::Event& event);
 
     private:
         /** \return success
@@ -59,6 +62,7 @@ class Level : public sf::Drawable, public EventListener
         sfmlBox2DDebugDraw mDebugDraw; ///< Physics debug drawing
         b2World mWorld; ///< Physical World
         const unsigned int mIndex; ///< Which level is this?
+        bool mEditMode; ///< Whether we're currently in the level editing mode
 };
 
 #endif // LEVEL_H
