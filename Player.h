@@ -6,7 +6,7 @@
 class Player : public Object
 {
     public:
-        Player();
+        Player(Level* const level);
         virtual ~Player();
 
         virtual const bool Serialize(std::ostream& out_stream) const;

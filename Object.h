@@ -5,6 +5,8 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
+class Level;
+
 /** Pretty much everything is an object. That way I can store pointers to it in box2D userdata. Can be casted accordingly using GetType().
 
     Since in Editor-Mode every object needs to be drawn, I simply make them all drawable. Also keeps things simpler and prevents diamonds of death (PhysicalObject and DrawableObject)
@@ -15,7 +17,7 @@ class Object : public sf::Drawable
         virtual ~Object();
 
         /** Returns a new object of the given type or NULL for invalid types **/
-        static Object* Create(const std::string& type);
+        static Object* Create(const std::string& type, Level * const level);
 
         /** \return success
             \param out_stream Stream to write into
@@ -31,13 +33,14 @@ class Object : public sf::Drawable
         **/
         virtual const std::string GetType() const = 0;
 
-        //from sf::Drawable - moved to public
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const = 0;
+        /** Called when this object is clicked in Edit mode
+        **/
+        virtual void Edit_OnClicked(const sf::Mouse::Button button) {}
 
     protected:
-        Object();
+        Object(Level* const level);
 
-    protected:
+        Level* const mLevel;
 };
 
 #endif // OBJECT_H

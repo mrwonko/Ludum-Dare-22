@@ -1,7 +1,11 @@
 #include "Level.h"
 #include "Object.h"
 
-Level::Level()
+static const b2Vec2 gravity(0.f, 0.f);
+
+Level::Level() :
+    mPlayer(this),
+    mWorld(gravity)
 {
     //ctor
 }
@@ -52,7 +56,7 @@ const bool Level::Deserialize(std::istream& stream)
     {
         std::string type;
         stream >> type;
-        Object* newObject = Object::Create(type);
+        Object* newObject = Object::Create(type, this);
         if(newObject == NULL)
         {
             std::cerr << "Invalid object type in level file" << std::endl;
@@ -69,10 +73,17 @@ const bool Level::Deserialize(std::istream& stream)
     return true; // successfully finished
 }
 
+extern bool g_debugPhysics;
+
 void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     for(std::list<Object*>::const_iterator it = mObjects.begin(); it != mObjects.end(); ++it)
     {
-        (*it)->Render(target, renderer);
+        target.Draw(**it);
+    }
+
+    if(g_debugPhysics)
+    {
+        target.Draw(mDebugDraw);
     }
 }

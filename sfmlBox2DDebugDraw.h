@@ -26,12 +26,13 @@ class sfmlBox2DDebugDraw : public sf::Drawable, public b2Draw
         ///Draw a line segment.
         virtual void 	DrawSegment (const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color);
         virtual void 	DrawTransform (const b2Transform &xf);
+
     private:
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         b2World* mWorld;
         sf::RenderTarget* mTarget;
         sf::Renderer* mRenderer;
 
+        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         void ProcessVertex(const sf::Vector2f& pos);
 };
 

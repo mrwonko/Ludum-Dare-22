@@ -1,6 +1,7 @@
 #include "Object.h"
 
-Object::Object()
+Object::Object(Level* const level) :
+    mLevel(level)
 {
     //ctor
 }
@@ -10,7 +11,7 @@ Object::~Object()
     //dtor
 }
 
-Object* Object::Create(const std::string& type)
+Object* Object::Create(const std::string& type, Level * const level)
 {
     if(type == "player")
     {

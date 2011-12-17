@@ -1,10 +1,12 @@
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include "Helpers.h"
 
 #include <Box2D/Box2D.h>
 #include "sfmlBox2DDebugDraw.h"
 
 sf::RenderWindow g_Window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
+bool g_debugPhysics = false;
 
 int main()
 {
@@ -48,7 +50,6 @@ int main()
 
     sfmlBox2DDebugDraw debugDraw;
     debugDraw.SetWorld(&world);
-    bool debugPhysics = false;
 
     SetViewPos(sf::Vector2f(0, 0));
 
@@ -77,7 +78,7 @@ int main()
                     {
                     case sf::Keyboard::P:
                         {
-                            debugPhysics = !debugPhysics;
+                            g_debugPhysics = !g_debugPhysics;
                         }
                     default:
                         {
@@ -91,18 +92,25 @@ int main()
                 }
             }
         }
+        unsigned int frametime = std::min(g_Window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
+
+        //game logic goes here
+
+        //TODO: delete
+        static const int32 velocityIterations = 6;
+        static const int32 positionIterations = 2;
+        world.Step( frametime / 1000.f, velocityIterations, positionIterations);
+
         g_Window.Clear();
+
 
         // render
 
-        if(debugPhysics)
+        if(g_debugPhysics)
         {
             g_Window.Draw(debugDraw);
         }
 
-        static const int32 velocityIterations = 6;
-        static const int32 positionIterations = 2;
-        world.Step(g_Window.GetFrameTime() / 1000.f, velocityIterations, positionIterations);
 
         g_Window.Display();
     }
