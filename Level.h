@@ -64,6 +64,7 @@ class Level : public sf::Drawable, public EventListener
         b2World mWorld; ///< Physical World
         const unsigned int mIndex; ///< Which level is this?
         bool mEditMode; ///< Whether we're currently in the level editing mode
+        sf::Text mEditText;
 };
 
 #endif // LEVEL_H

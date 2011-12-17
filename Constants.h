@@ -9,6 +9,8 @@ struct Constants
     static const std::string LEVEL_BASE_NAME;
     static const std::string LEVEL_EXTENSION;
 
+    static const std::string FONTPATH;
+
     static const float GAMEFIELD_HEIGHT = 30.f; //visible gamefield in m
     // width is calculated based on aspect & height
 

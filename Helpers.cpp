@@ -3,7 +3,7 @@
 #include "Constants.h"
 #include <fstream>
 #include <sstream>
-#include "Box2D/Box2D.h"
+#include <Box2D/Box2D.h>
 
 void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center)
 {
@@ -60,13 +60,13 @@ namespace
     };
 }
 
-std::vector<b2Body*> GetBodiesAtPoint(const b2World* world, const b2Vec2& point)
+std::vector<b2Body*> GetBodiesAtPoint(const b2World& world, const b2Vec2& point)
 {
     static const b2Vec2 tolerance(0.01f, 0.01f); //there's actually zero tolerance - we test whether the found fixtures' shapes contain the searched points later.
     b2AABB aabb;
     aabb.upperBound = point + tolerance;
     aabb.lowerBound = point - tolerance;
     AABBQueryCallback cb(point);
-    world->QueryAABB(&cb, aabb);
+    world.QueryAABB(&cb, aabb);
     return cb.foundBodies;
 }

@@ -59,6 +59,10 @@
 		<Unit filename="Player.h" />
 		<Unit filename="StaticRect.cpp" />
 		<Unit filename="StaticRect.h" />
+		<Unit filename="UI.cpp" />
+		<Unit filename="UI.h" />
+		<Unit filename="UIElement.cpp" />
+		<Unit filename="UIElement.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="sfmlBox2DDebugDraw.cpp" />
 		<Unit filename="sfmlBox2DDebugDraw.h" />

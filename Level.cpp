@@ -111,6 +111,16 @@ const bool Level::ProcessEvent(const sf::Event& event)
     if(mEditMode)
     {
         //special editmode events - may overwrite base events (because they're handled first - they have priority.)
+        if(event.Type == sf::Event::MouseButtonPressed)
+        {
+            std::vector<b2Body*> bodies = GetBodiesAtPoint(mWorld, b2Vec2(event.MouseButton.X, event.MouseButton.Y));
+            for(std::vector<b2Body*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
+            {
+                Object* obj = reinterpret_cast<Object*>((*it)->GetUserData());
+                obj->Edit_OnClicked(event.MouseButton.Button);
+            }
+            return true;
+        }
     }
     else
     {

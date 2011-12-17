@@ -22,6 +22,6 @@ class b2World;
 class b2Body;
 class b2Vec2;
 
-std::vector<b2Body*> GetBodiesAtPoint(const b2World* world, const b2Vec2& point);
+std::vector<b2Body*> GetBodiesAtPoint(const b2World& world, const b2Vec2& point);
 
 #endif

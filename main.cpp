@@ -6,9 +6,15 @@
 #include "EventListenerList.h"
 
 EventListenerList g_EventListeners;
+sf::Font g_Font;
 
 int main()
 {
+    if(!g_Font.LoadFromFile(Constants::FONTPATH))
+    {
+        std::cerr << "Could not load font \"" << Constants::FONTPATH << "\"!" << std::endl;
+        return 0;
+    }
     int numLevels = GetLevelCount();
     std::cout << "Found " << numLevels << " levels." << std::endl;
 
