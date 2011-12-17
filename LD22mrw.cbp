@@ -43,9 +43,12 @@
 			<Add library="box2d" />
 			<Add library="opengl32" />
 		</Linker>
-		<Unit filename="Constants.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="Constants.cpp" />
+		<Unit filename="Constants.h" />
+		<Unit filename="EventListener.cpp" />
+		<Unit filename="EventListener.h" />
+		<Unit filename="EventListenerList.cpp" />
+		<Unit filename="EventListenerList.h" />
 		<Unit filename="Helpers.cpp" />
 		<Unit filename="Helpers.h" />
 		<Unit filename="Level.cpp" />

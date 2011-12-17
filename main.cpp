@@ -3,6 +3,9 @@
 #include <algorithm>
 #include "Helpers.h"
 #include "Level.h"
+#include "EventListenerList.h"
+
+EventListenerList g_EventListeners;
 
 int main()
 {
@@ -86,10 +89,7 @@ int main()
                 }
             default:
                 {
-                    if(curLevel)
-                    {
-                        curLevel->ProcessEvent(ev);
-                    }
+                    g_EventListeners.ProcessEvent(ev);
                 }
             }
         }
@@ -101,6 +101,7 @@ int main()
             {
                 delete curLevel;
                 curLevel = NULL;
+                g_EventListeners.Clear(); // there shouldn't be any event listeners that are not children of the level, so let's clean up to be sure we're not accessing dead pointers
             }
             ++curLevelIndex;
             if(curLevelIndex < numLevels)
@@ -134,6 +135,7 @@ int main()
     }
     if(curLevel != NULL)
     {
+        g_EventListeners.Remove(curLevel);
         delete curLevel;
     }
     return 0;

@@ -19,6 +19,7 @@ class EventListenerList
         void PushBack(EventListener* listener);
         void PushFront(EventListener* listener);
         void Remove(EventListener* listener);
+        void Clear();
 
         /// \return Whether the event was used
         const bool ProcessEvent(const sf::Event& event);

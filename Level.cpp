@@ -2,8 +2,10 @@
 #include "Helpers.h"
 #include "Object.h"
 #include <fstream>
+#include "EventListenerList.h"
 
 static const b2Vec2 gravity(0.f, 0.f);
+extern EventListenerList g_EventListeners;
 
 Level::Level(const unsigned int index) :
     mPlayer(this),
@@ -12,8 +14,9 @@ Level::Level(const unsigned int index) :
     mIndex(index),
     mEditMode(false)
 {
-    //ctor
+    mWorld.SetAllowSleeping(true);
     mDebugDraw.SetWorld(&mWorld);
+    g_EventListeners.PushBack(this);
 }
 
 Level::~Level()
@@ -23,6 +26,7 @@ Level::~Level()
     {
         delete *it;
     }
+    g_EventListeners.Remove(this);
 }
 
 const bool Level::Serialize(std::ostream& out_stream) const
@@ -158,4 +162,8 @@ const bool Level::IsComplete() const
 void Level::Update(unsigned int deltaT_msec)
 {
     mWorld.Step(deltaT_msec / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
+    for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+    {
+        (*it)->Update(deltaT_msec);
+    }
 }

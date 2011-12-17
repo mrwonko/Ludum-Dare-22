@@ -48,3 +48,8 @@ const bool EventListenerList::ProcessEvent(const sf::Event& event)
     }
     return false;
 }
+
+void EventListenerList::Clear()
+{
+    mListeners.clear();
+}

@@ -33,9 +33,13 @@ class Object : public sf::Drawable
         **/
         virtual const std::string GetType() const = 0;
 
-        /** Called when this object is clicked in Edit mode
+        /** Called when this object is clicked in Edit mode - e.g. to change color, enter edit mode etc.
         **/
         virtual void Edit_OnClicked(const sf::Mouse::Button button) {}
+
+        /** Called each frame with elapsed time
+        **/
+        virtual void Update(unsigned int deltaT_msec) {}
 
     protected:
         Object(Level* const level);

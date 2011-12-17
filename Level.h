@@ -5,12 +5,13 @@
 #include <list>
 #include "Player.h"
 #include "Constants.h"
+#include "EventListener.h"
 #include "sfmlBox2DDebugDraw.h"
 #include <SFML/Graphics.hpp>
 
 class Object;
 
-class Level : public sf::Drawable
+class Level : public sf::Drawable, public EventListener
 {
     static const int PHYS_VELOCITY_ITERATIONS = 6;
     static const int PHYS_POSITION_ITERATIONS = 2;
@@ -40,7 +41,7 @@ class Level : public sf::Drawable
 
         b2World& GetWorld() { return mWorld; }
 
-        const bool ProcessEvent(const sf::Event& event);
+        virtual const bool ProcessEvent(const sf::Event& event);
 
     private:
         /** \return success
