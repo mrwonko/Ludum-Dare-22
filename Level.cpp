@@ -345,8 +345,13 @@ void Level::SetupUIs()
 
     UIText* helpText = new UIText;
     helpText->SetCoordinates(sf::Vector2f(0.f, -200.f));
-    helpText->SetText("F2 and F3 change the level\nF5 saves\nR reloads\nF6 adds a new level (at the end)\nHold control to snap\nScroll mousewheel to change tool");
+    helpText->SetText("F2 and F3 change the level\nF5 saves\nR reloads (save first!)\nF6 adds a new level (at the end)\nHold control to snap\nScroll mousewheel to change tool");
     mEditUI.AddElement("help", helpText);
+
+    UIText* editmodeText = new UIText;
+    editmodeText->SetCoordinates(sf::Vector2f(-120.f, -35.f));
+    editmodeText->SetText("Edit Mode");
+    mEditUI.AddElement("editmode", editmodeText);
 
     UIText* levelText = new UIText;
     std::stringstream ss;
