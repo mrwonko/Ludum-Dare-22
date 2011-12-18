@@ -2,7 +2,8 @@
 #include "Level.h"
 
 Trigger::Trigger(Level* const level) :
-    StaticRect(level)
+    StaticRect(level),
+    mPlayerWasInside(false)
 {
     //ctor
 }
@@ -32,6 +33,7 @@ void Trigger::UpdateShape()
         b2BodyDef def;
         def.position.Set(center.x, center.y);
         def.userData = this;
+        def.type = b2_staticBody;
         mBody = mLevel->GetWorld().CreateBody(&def);
     }
     else
@@ -47,10 +49,37 @@ void Trigger::UpdateShape()
     b2FixtureDef fixDef;
     fixDef.shape = &shape;
     fixDef.isSensor = true; //No collision!
+    fixDef.density = 0;
     mFixture = mBody->CreateFixture(&fixDef); // second param is mass, not used here
 }
 
+//checks if the player is inside and calls OnLeave()/OnEnter() accordingly
 void Trigger::Update(unsigned int deltaT_msec)
 {
-    //todo
+    bool playerIsInside = false;
+    for(const b2ContactEdge* it = mBody->GetContactList(); it != NULL; it = it->next)
+    {
+        b2Contact* contact = it->contact;
+        if(contact->IsTouching())
+        {
+            Object* other = reinterpret_cast<Object*>(it->other->GetUserData());
+            if(other->GetType() == "Player")
+            {
+                playerIsInside = true;
+                break;
+            }
+        }
+    }
+    if(playerIsInside != mPlayerWasInside)
+    {
+        if(mPlayerWasInside)
+        {
+            OnLeave();
+        }
+        else
+        {
+            OnEnter();
+        }
+    }
+    mPlayerWasInside = playerIsInside;
 }

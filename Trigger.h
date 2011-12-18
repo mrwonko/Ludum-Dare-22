@@ -20,6 +20,9 @@ class Trigger : public StaticRect
         virtual void Update(unsigned int deltaT_msec);
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         virtual void UpdateShape();
+
+    private:
+        bool mPlayerWasInside;
 };
 
 #endif // TRIGGER_H

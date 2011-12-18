@@ -12,7 +12,7 @@ const float Constants::STATICRECT_BORDERSIZE = -0.1f;
 const float Constants::EDITMODE_CAMSPEED = 20.f/1000.f;
 const sf::Color Constants::PLAYER_COLOR(63, 63, 255);
 const sf::Color Constants::GOAL_COLOR(0, 255, 0, 127);
-const unsigned int Constants::LEVELCHANGE_BLINKTIME = 1000;
+const unsigned int Constants::LEVELCHANGE_BLINKTIME = 250;
 
 //  Gameplay affecting
 

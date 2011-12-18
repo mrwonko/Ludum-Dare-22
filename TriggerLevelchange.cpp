@@ -21,7 +21,8 @@ void TriggerLevelchange::OnEnter()
 
 void TriggerLevelchange::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
-    if(mBlinkTime < Constants::LEVELCHANGE_BLINKTIME || mLevel->InEditMode())
+    //blinking looks ugly
+    //if(mBlinkTime < Constants::LEVELCHANGE_BLINKTIME || mLevel->InEditMode())
     {
         target.Draw(mShape);
     }
@@ -29,5 +30,6 @@ void TriggerLevelchange::Render(sf::RenderTarget& target, sf::Renderer& renderer
 
 void TriggerLevelchange::Update(unsigned int deltaT_msec)
 {
+    Trigger::Update(deltaT_msec);
     mBlinkTime = (mBlinkTime + deltaT_msec) % (2 * Constants::LEVELCHANGE_BLINKTIME);
 }
