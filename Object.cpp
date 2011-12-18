@@ -1,6 +1,7 @@
 #include "Object.h"
 #include "StaticRect.h"
 #include "TriggerLevelchange.h"
+#include "TriggerKill.h"
 
 Object::Object(Level* const level) :
     mLevel(level)
@@ -27,6 +28,10 @@ Object* Object::Create(const std::string& type, Level * const level)
     if(type == "TriggerLevelchange")
     {
         return new TriggerLevelchange(level);
+    }
+    if(type == "TriggerKill")
+    {
+        return new TriggerKill(level);
     }
     return NULL;
 }

@@ -38,7 +38,10 @@ Player::~Player()
 
 void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
-    target.Draw(mRepresentative);
+    if(!mLevel->IsLost()) //Player explodes on death and is no longer rendered!
+    {
+        target.Draw(mRepresentative);
+    }
 }
 
 const bool Player::Serialize(std::ostream& out_stream) const

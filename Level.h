@@ -13,10 +13,18 @@
 class EditAction;
 class Object;
 
+/** This turned into way more than just the level, it's a kind of general game class **/
 class Level : public sf::Drawable, public EventListener
 {
     static const int PHYS_VELOCITY_ITERATIONS = 6;
     static const int PHYS_POSITION_ITERATIONS = 2;
+
+    enum Status
+    {
+        ePlaying,
+        eWon,
+        eLost
+    };
 
     public:
         Level(const unsigned int index);
@@ -32,13 +40,16 @@ class Level : public sf::Drawable, public EventListener
         **/
         const bool Save();
 
-        const bool IsComplete() const { return mComplete; }
+        const bool IsComplete() const { return mStatus == eWon; }
+        const bool IsLost() const { return mStatus == eLost; }
 
-        void Win() { mComplete = true; }
+        void Win() { mStatus = eWon; }
+
+        void Lose();
 
         void Update(unsigned int deltaT_msec);
 
-        void AddObject(Object* obj) ///< Fire & Forget - will delete objects on destruction.
+        void AddObject(Object* obj) ///< Fire & Forget - will delete objects on destruction. (Or reload)
         {
             mObjects.push_back(obj);
         }
@@ -85,7 +96,7 @@ class Level : public sf::Drawable, public EventListener
         EditActionList mEditActions;
         EditActionList::iterator mCurrentEditAction;
         sf::Vector2f mEditCameraPosition;
-        bool mComplete;
+        Status mStatus;
 };
 
 #endif // LEVEL_H

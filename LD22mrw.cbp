@@ -48,6 +48,8 @@
 		<Unit filename="EditAction.h" />
 		<Unit filename="EditAction_Click.cpp" />
 		<Unit filename="EditAction_Click.h" />
+		<Unit filename="EditAction_NewKiller.cpp" />
+		<Unit filename="EditAction_NewKiller.h" />
 		<Unit filename="EditAction_NewLevelchange.cpp" />
 		<Unit filename="EditAction_NewLevelchange.h" />
 		<Unit filename="EditAction_NewStaticRect.cpp" />
@@ -70,6 +72,8 @@
 		<Unit filename="StaticRect.h" />
 		<Unit filename="Trigger.cpp" />
 		<Unit filename="Trigger.h" />
+		<Unit filename="TriggerKill.cpp" />
+		<Unit filename="TriggerKill.h" />
 		<Unit filename="TriggerLevelchange.cpp" />
 		<Unit filename="TriggerLevelchange.h" />
 		<Unit filename="UI.cpp" />

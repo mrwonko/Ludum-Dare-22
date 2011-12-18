@@ -9,6 +9,7 @@
 #include "EditAction_Click.h"
 #include "EditAction_NewStaticRect.h"
 #include "EditAction_NewLevelchange.h"
+#include "EditAction_NewKiller.h"
 #include "EditAction_Remove.h"
 
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
@@ -21,7 +22,7 @@ Level::Level(const unsigned int index) :
     mIndex(index),
     mEditMode(false),
     mPlayer(this), //after world! (.h counts)
-    mComplete(false)
+    mStatus(Level::ePlaying)
 {
     mWorld.SetAllowSleeping(true);
     mDebugDraw.SetWorld(&mWorld);
@@ -188,10 +189,13 @@ const bool Level::ProcessEvent(const sf::Event& event)
     }
     else
     {
-        //gameplay events - disabled in edit mode
-        if(mPlayer.ProcessEvent(event))
+        if(mStatus == ePlaying) //cannot move player when dead
         {
-            return true;
+            //gameplay events - disabled in edit mode
+            if(mPlayer.ProcessEvent(event))
+            {
+                return true;
+            }
         }
     }
     //events that are always handled, no matter if editmode is enabled
@@ -221,8 +225,10 @@ const bool Level::ProcessEvent(const sf::Event& event)
         }
         if(event.Key.Code == Constants::RELOAD_KEY)
         {
+            mStatus = ePlaying;
             DeleteObjects();
             Load();
+            //TODO: Clear Particles
             return true;
         }
     }
@@ -301,8 +307,11 @@ void Level::Update(unsigned int deltaT_msec)
         {
             (*it)->Update(deltaT_msec);
         }
-        // Update Player
-        mPlayer.Update(deltaT_msec);
+        if(mStatus == ePlaying)
+        {
+            // Update Player
+            mPlayer.Update(deltaT_msec);
+        }
     }
 }
 
@@ -324,6 +333,7 @@ void Level::SetupEditActions()
     mEditActions.push_back(new EditAction_Remove(this));
     mEditActions.push_back(new EditAction_NewStaticRect(this));
     mEditActions.push_back(new EditAction_NewLevelchange(this));
+    mEditActions.push_back(new EditAction_NewKiller(this));
 
     //set current one to first one
     assert(!mEditActions.empty());
@@ -352,4 +362,10 @@ void Level::RemoveObject(Object* obj)
             ++it;
         }
     }
+}
+
+void Level::Lose()
+{
+    //TODO: Explosion!
+    mStatus = eLost;
 }
