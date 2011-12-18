@@ -5,6 +5,7 @@
 #include "EventListener.h"
 
 class b2Body;
+class b2Fixture;
 
 class StaticRect : public Object //, public EventListener //event listener: may need this if I want to react to different events in edit mode?
 {
@@ -17,14 +18,27 @@ class StaticRect : public Object //, public EventListener //event listener: may 
         virtual const bool Serialize(std::ostream& out_stream) const;
         virtual const bool Deserialize(std::istream& stream);
 
+        void SetCorner1(const sf::Vector2f& pos);
+        void SetCorner2(const sf::Vector2f& pos);
+        void SetColor(const sf::Color& color); ///< Default: White
+
+        virtual void Edit_OnClicked(const sf::Mouse::Button button);
+
     protected:
+        void Update();
+
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
 
         sf::Vector2f mCorner1;
         sf::Vector2f mCorner2;
 
         sf::Shape mShape;
+        unsigned int mColorIndex;
+        sf::Color mColor;
         b2Body* mBody;
+        b2Fixture* mFixture;
+
+        static std::vector<sf::Color> sColors;
 };
 
 #endif // STATICRECT_H

@@ -18,6 +18,9 @@ unsigned int GetLevelCount();
 
 const std::string GetLevelName(unsigned int index);
 
+// uses g_Window - yep, I start quick & dirty hacking.
+sf::Vector2f ScreenToWorldSpace(const sf::Vector2f& screenSpaceCoord);
+
 
 class b2World;
 class b2Body;

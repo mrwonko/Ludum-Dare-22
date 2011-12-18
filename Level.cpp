@@ -4,8 +4,10 @@
 #include "UIText.h"
 #include "EditAction.h"
 #include <fstream>
+#include <sstream>
 #include "EventListenerList.h"
 #include "EditAction_Click.h"
+#include "EditAction_NewStaticRect.h"
 
 static const b2Vec2 gravity(0.f, 0.f);
 extern EventListenerList g_EventListeners;
@@ -135,6 +137,14 @@ const bool Level::ProcessEvent(const sf::Event& event)
     if(mEditMode)
     {
         //special editmode events - may overwrite base events (because they're handled first - they have priority.)
+        if(event.Type == sf::Event::KeyPressed && event.Key.Code == Constants::LEVELSAVE_KEY)
+        {
+            if(Save())
+            {
+                std::cout<<"Level saved"<<std::endl;
+            }
+            return true;
+        }
         //execute the currently selected edit action - switched via mouse wheel
         if(mCurrentEditAction != mEditActions.end()) //any edit actions?
         {
@@ -145,6 +155,7 @@ const bool Level::ProcessEvent(const sf::Event& event)
             }
             if(event.Type == sf::Event::MouseWheelMoved)
             {
+                (*mCurrentEditAction)->OnExit();
                 if(event.MouseWheel.Delta < 0)
                 {
                     ++mCurrentEditAction;
@@ -206,6 +217,30 @@ const bool Level::Load()
     return true;
 }
 
+const bool Level::Save()
+{
+    std::stringstream temp_stream;
+    if(!Serialize(temp_stream))
+    {
+        std::cerr << "Error serializing to \"" << GetLevelName(mIndex) << "\"!" << std::endl;
+        return false;
+    }
+    // don't overwrite file until serialization was successful :)
+    std::ofstream file(GetLevelName(mIndex).c_str(), std::ios_base::out | std::ios_base::trunc);
+    if(file.fail())
+    {
+        std::cerr << "Could not open \"" << GetLevelName(mIndex) << "\"!" << std::endl;
+        return false;
+    }
+    file << temp_stream.rdbuf();
+    if(file.fail())
+    {
+        std::cerr << "Could not write to \"" << GetLevelName(mIndex) << "\"! Sorry, the file is now lost. (Hope you had a backup if you were overwriting.)" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 const bool Level::IsComplete() const
 {
     //TODO
@@ -223,9 +258,12 @@ void Level::Update(unsigned int deltaT_msec)
 
 void Level::SetupUIs()
 {
+    //  Game UI
+    //...
+    //  Edit UI
+    //current action
     UIText* actionText = new UIText;
     actionText->SetCoordinates(sf::Vector2f(0.f, 0.f));
-    actionText->SetCoordinates(sf::Vector2f(-160.f, 0.f));
     mEditUI.AddElement("action", actionText);
 }
 
@@ -233,6 +271,7 @@ void Level::SetupEditActions()
 {
     //add edit actions
     mEditActions.push_back(new EditAction_Click(this));
+    mEditActions.push_back(new EditAction_NewStaticRect(this));
 
     //set current one to first one
     assert(!mEditActions.empty());
@@ -246,4 +285,19 @@ void Level::OnEditActionChange()
     UIText* actionText = reinterpret_cast<UIText*>(mEditUI.GetElement("action"));
     assert(actionText != NULL);
     actionText->SetText(curAction->GetName());
+}
+
+void Level::RemoveObject(Object* obj)
+{
+    for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end();)
+    {
+        if((*it) == obj)
+        {
+            it = mObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }

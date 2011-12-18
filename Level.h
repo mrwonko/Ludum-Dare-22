@@ -36,10 +36,12 @@ class Level : public sf::Drawable, public EventListener
 
         void Update(unsigned int deltaT_msec);
 
-        void AddObject(Object* obj)
+        void AddObject(Object* obj) ///< Fire & Forget - will delete objects on destruction.
         {
             mObjects.push_back(obj);
         }
+
+        void RemoveObject(Object* obj); ///< Only erases from list, does not delete object. i.e. you become responsible for deleting it. (Well, since you are me and only I work on this, you area already responsible...)
 
         b2World& GetWorld() { return mWorld; }
 

@@ -7,6 +7,7 @@
 
 EventListenerList g_EventListeners;
 sf::Font g_Font;
+sf::RenderWindow* g_Window = NULL;
 
 int main()
 {
@@ -26,6 +27,7 @@ int main()
     int curLevelIndex = -1;
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
+    g_Window = &window;
 
     Level* curLevel = NULL;
 
@@ -144,5 +146,6 @@ int main()
         g_EventListeners.Remove(curLevel);
         delete curLevel;
     }
+    g_Window = NULL;
     return 0;
 }

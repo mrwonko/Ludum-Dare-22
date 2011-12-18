@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <Box2D/Box2D.h>
 
 void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center)
@@ -45,12 +46,19 @@ namespace
             b2Body* body = fixture->GetBody();
             if(body == NULL) //skip
             {
+                std::cout<<"Warning: AABBQuery found fixture without body!" << std::endl;
                 return true;
             }
-            if(fixture->GetShape()->TestPoint(body->GetTransform(), mPoint))
+            if(fixture->TestPoint(mPoint))
             {
                 foundBodies.push_back(body);
             }
+            #ifdef _DEBUG
+            else
+            {
+                std::cout<<"AABB too inaccurate - body not exactly hit. " << mPoint.x << ", " << mPoint.y << "; " << body->GetTransform().p.x << ", " << body->GetTransform().p.y << std::endl;
+            }
+            #endif
             return true; //continue
         }
 
@@ -69,4 +77,13 @@ std::vector<b2Body*> GetBodiesAtPoint(const b2World& world, const b2Vec2& point)
     AABBQueryCallback cb(point);
     world.QueryAABB(&cb, aabb);
     return cb.foundBodies;
+}
+
+extern sf::RenderWindow* g_Window;
+sf::Vector2f ScreenToWorldSpace(const sf::Vector2f& screenSpaceCoord)
+{
+    assert(g_Window != NULL);
+    const sf::Vector2f& viewSize = g_Window->GetView().GetSize();
+    const sf::Vector2f viewCorner = g_Window->GetView().GetCenter() - 0.5f * viewSize;
+    return sf::Vector2f(viewCorner.x + screenSpaceCoord.x * viewSize.x / g_Window->GetWidth(), viewCorner.y + screenSpaceCoord.y * viewSize.y / g_Window->GetHeight());
 }

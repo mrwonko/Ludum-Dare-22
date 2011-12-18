@@ -15,6 +15,7 @@ class EditAction
         virtual ~EditAction() {}
 
         virtual const bool ProcessEvent(const sf::Event& event) = 0;
+        virtual void OnExit() {} //EditAction's changed to another one
         virtual std::string GetName() const = 0;
 
     protected:

@@ -19,7 +19,9 @@ const bool EditAction_Click::ProcessEvent(const sf::Event& event)
 {
     if(event.Type == sf::Event::MouseButtonPressed)
     {
-        std::vector<b2Body*> bodies = GetBodiesAtPoint(mLevel->GetWorld(), b2Vec2(event.MouseButton.X, event.MouseButton.Y));
+        sf::Vector2f mousePos(event.MouseButton.X, event.MouseButton.Y);
+        mousePos = ScreenToWorldSpace(mousePos);
+        std::vector<b2Body*> bodies = GetBodiesAtPoint(mLevel->GetWorld(), b2Vec2(mousePos.x, mousePos.y));
         for(std::vector<b2Body*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
         {
             Object* obj = reinterpret_cast<Object*>((*it)->GetUserData());
