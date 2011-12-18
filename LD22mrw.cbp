@@ -50,6 +50,8 @@
 		<Unit filename="EditAction_Click.h" />
 		<Unit filename="EditAction_NewStaticRect.cpp" />
 		<Unit filename="EditAction_NewStaticRect.h" />
+		<Unit filename="EditAction_Remove.cpp" />
+		<Unit filename="EditAction_Remove.h" />
 		<Unit filename="EventListener.cpp" />
 		<Unit filename="EventListener.h" />
 		<Unit filename="EventListenerList.cpp" />

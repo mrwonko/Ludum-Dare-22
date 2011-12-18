@@ -32,17 +32,6 @@ int main()
     Level* curLevel = NULL;
 
     /*
-    b2Vec2 gravity(0.f, 10.f);
-    b2World world(gravity);
-    world.SetAllowSleeping(true);
-    { // ground body definition - static by default
-        b2BodyDef def;
-        def.position.Set(0.f, 10.f);
-        b2Body* body = world.CreateBody(&def);
-        b2PolygonShape shape;
-        shape.SetAsBox(40.f, 5.f);
-        body->CreateFixture(&shape, 0.f); // second param is mass, not used here
-    }
     {
         b2BodyDef def;
         def.position.Set(0.f, 0.f);
@@ -69,9 +58,6 @@ int main()
         fdef.friction = 0.5f;
         body->CreateFixture(&fdef); //no mass means: calculate
     }
-
-    sfmlBox2DDebugDraw debugDraw;
-    debugDraw.SetWorld(&world);
     */
 
     SetViewPos(window, sf::Vector2f(0, 0));

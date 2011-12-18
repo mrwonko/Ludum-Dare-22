@@ -80,6 +80,7 @@ class Level : public sf::Drawable, public EventListener
         typedef std::list<EditAction*> EditActionList;
         EditActionList mEditActions;
         EditActionList::iterator mCurrentEditAction;
+        sf::Vector2f mEditCameraPosition;
 };
 
 #endif // LEVEL_H

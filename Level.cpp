@@ -8,9 +8,11 @@
 #include "EventListenerList.h"
 #include "EditAction_Click.h"
 #include "EditAction_NewStaticRect.h"
+#include "EditAction_Remove.h"
 
 static const b2Vec2 gravity(0.f, 0.f);
 extern EventListenerList g_EventListeners;
+extern sf::RenderWindow* g_Window;
 
 Level::Level(const unsigned int index) :
     mPlayer(this),
@@ -195,6 +197,14 @@ const bool Level::ProcessEvent(const sf::Event& event)
         if(event.Key.Code == Constants::LEVELEDIT_KEY)
         {
             mEditMode = !mEditMode;
+            if(mEditMode)
+            {
+                mEditCameraPosition = mPlayer.GetPosition();
+            }
+            else
+            {
+                SetViewPos(*g_Window, mPlayer.GetPosition());
+            }
             return true;
         }
     }
@@ -249,10 +259,36 @@ const bool Level::IsComplete() const
 
 void Level::Update(unsigned int deltaT_msec)
 {
-    mWorld.Step(deltaT_msec / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
-    for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+    if(mEditMode)
     {
-        (*it)->Update(deltaT_msec);
+        if(sf::Keyboard::IsKeyPressed(Constants::MOVEL_KEY))
+        {
+            mEditCameraPosition.x -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
+        }
+        if(sf::Keyboard::IsKeyPressed(Constants::MOVER_KEY))
+        {
+            mEditCameraPosition.x += Constants::EDITMODE_CAMSPEED * deltaT_msec;
+        }
+        if(sf::Keyboard::IsKeyPressed(Constants::MOVEU_KEY))
+        {
+            mEditCameraPosition.y -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
+        }
+        if(sf::Keyboard::IsKeyPressed(Constants::MOVED_KEY))
+        {
+            mEditCameraPosition.y += Constants::EDITMODE_CAMSPEED * deltaT_msec;
+        }
+        assert(g_Window != NULL);
+        SetViewPos(*g_Window, mEditCameraPosition);
+    }
+    else
+    {
+        // Update Physics
+        mWorld.Step(deltaT_msec / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
+        // Update Objects
+        for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+        {
+            (*it)->Update(deltaT_msec);
+        }
     }
 }
 
@@ -271,6 +307,7 @@ void Level::SetupEditActions()
 {
     //add edit actions
     mEditActions.push_back(new EditAction_Click(this));
+    mEditActions.push_back(new EditAction_Remove(this));
     mEditActions.push_back(new EditAction_NewStaticRect(this));
 
     //set current one to first one

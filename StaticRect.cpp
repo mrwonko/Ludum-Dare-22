@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "Level.h"
 #include <Box2D/Box2D.h>
+#include <algorithm>
 //#include "EventListenerList.h"
 
 //extern EventListenerList g_EventListeners;
@@ -113,7 +114,7 @@ void StaticRect::Update()
         mBody->DestroyFixture(mFixture);
     }
     b2PolygonShape shape;
-    shape.SetAsBox(abs(size.x/2), abs(size.y/2));
+    shape.SetAsBox(std::abs(size.x/2), std::abs(size.y/2));
     mFixture = mBody->CreateFixture(&shape, 0.f); // second param is mass, not used here
 }
 
