@@ -17,6 +17,7 @@ struct Constants
 
 
     static const sf::Color PLAYER_COLOR;
+    static const sf::Color GOAL_COLOR;
 
     static const float STATICRECT_BORDERSIZE;
     static const float EDITMODE_CAMSPEED;

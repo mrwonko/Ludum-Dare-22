@@ -32,7 +32,9 @@ class Level : public sf::Drawable, public EventListener
         **/
         const bool Save();
 
-        const bool IsComplete() const;
+        const bool IsComplete() const { return mComplete; }
+
+        void Win() { mComplete = true; }
 
         void Update(unsigned int deltaT_msec);
 
@@ -83,6 +85,7 @@ class Level : public sf::Drawable, public EventListener
         EditActionList mEditActions;
         EditActionList::iterator mCurrentEditAction;
         sf::Vector2f mEditCameraPosition;
+        bool mComplete;
 };
 
 #endif // LEVEL_H

@@ -19,7 +19,8 @@ Level::Level(const unsigned int index) :
     mWorld(gravity),
     mIndex(index),
     mEditMode(false),
-    mPlayer(this) //after world (.h counts)
+    mPlayer(this), //after world! (.h counts)
+    mComplete(false)
 {
     mWorld.SetAllowSleeping(true);
     mDebugDraw.SetWorld(&mWorld);
@@ -265,12 +266,6 @@ const bool Level::Save()
         return false;
     }
     return true;
-}
-
-const bool Level::IsComplete() const
-{
-    //TODO
-    return false;
 }
 
 void Level::Update(unsigned int deltaT_msec)

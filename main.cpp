@@ -9,6 +9,16 @@ EventListenerList g_EventListeners;
 sf::Font g_Font;
 sf::RenderWindow* g_Window = NULL;
 
+namespace
+{
+    void SetWinView(sf::RenderTarget& target)
+    {
+        float height = 600;
+        float width = height * target.GetWidth() / target.GetHeight();
+        target.SetView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(width, height)));
+    }
+}
+
 int main()
 {
     if(!g_Font.LoadFromFile(Constants::FONTPATH))
@@ -24,43 +34,22 @@ int main()
         std::cerr << "No levels found!" << std::endl;
         return 0;
     }
-    int curLevelIndex = -1;
+    int curLevelIndex = -1; // when this == numLevels, we're at the game won screen.
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
     g_Window = &window;
 
     Level* curLevel = NULL;
 
-    /*
-    {
-        b2BodyDef def;
-        def.position.Set(0.f, 0.f);
-        def.type = b2_dynamicBody; // override static body default
-        b2Body* body = world.CreateBody(&def);
-        b2PolygonShape shape;
-        shape.SetAsBox(2.f, 2.f);
-        b2FixtureDef fdef;
-        fdef.shape = &shape;
-        fdef.density = 1.f; //used to calculate mass
-        fdef.friction = 0.3f;
-        body->CreateFixture(&fdef); //no mass means: calculate
-    }
-    {
-        b2BodyDef def;
-        def.position.Set(2.1f, -5.f);
-        def.type = b2_dynamicBody; // override static body default
-        b2Body* body = world.CreateBody(&def);
-        b2CircleShape shape;
-        shape.m_radius = 2.f;
-        b2FixtureDef fdef;
-        fdef.shape = &shape;
-        fdef.density = 1.f; //used to calculate mass
-        fdef.friction = 0.5f;
-        body->CreateFixture(&fdef); //no mass means: calculate
-    }
-    */
-
     SetViewPos(window, sf::Vector2f(0, 0));
+
+    sf::Text winnerText;
+    winnerText.SetFont(g_Font);
+    winnerText.SetString("You win!");
+    winnerText.SetCharacterSize(200.f);
+    sf::FloatRect textRec = winnerText.GetRect();
+    winnerText.SetPosition(-textRec.Width / 2.f, -textRec.Height / 2.f);
+    winnerText.SetColor(sf::Color::White);
 
     bool inFocus = true;
     while(window.IsOpened())
@@ -78,8 +67,16 @@ int main()
                 }
             case sf::Event::Resized:
                 {
-                    //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
-                    SetViewPos(window, window.GetView().GetCenter());
+                    if(curLevelIndex < numLevels)
+                    {
+                        //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
+                        SetViewPos(window, window.GetView().GetCenter());
+                    }
+                    else
+                    {
+                        SetWinView(window);
+                    }
+                    break;
                 }
             case sf::Event::LostFocus:
                 {
@@ -91,15 +88,64 @@ int main()
                     inFocus = true;
                     break;
                 }
+            case sf::Event::KeyPressed:
+                {
+                    if(ev.Key.Code == Constants::PREVLEVEL_KEY)
+                    {
+                        if(curLevelIndex > 0)
+                        {
+                            if(curLevelIndex < numLevels)
+                            {
+                                delete curLevel;
+                                g_EventListeners.Clear();
+                            }
+                            --curLevelIndex;
+                            curLevel = new Level(curLevelIndex);
+                            if(!curLevel->Load())
+                            {
+                                window.Close();
+                            }
+                        }
+                    }
+                    else if(ev.Key.Code == Constants::NEXTLEVEL_KEY)
+                    {
+                        if(curLevelIndex < numLevels)
+                        {
+                            delete curLevel;
+                            curLevel = NULL;
+                            g_EventListeners.Clear();
+                            ++curLevelIndex;
+                            if(curLevelIndex < numLevels)
+                            {
+                                curLevel = new Level(curLevelIndex);
+                                if(!curLevel->Load())
+                                {
+                                    window.Close();
+                                }
+                            }
+                            else
+                            {
+                                SetWinView(window);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        g_EventListeners.ProcessEvent(ev);
+                    }
+                    break;
+                }
             default:
                 {
                     g_EventListeners.ProcessEvent(ev);
+                    break;
                 }
             }
         }
 
         //  Level changing
-        if(curLevel == NULL or curLevel->IsComplete())
+        assert(curLevelIndex >= -1);
+        if(curLevelIndex == -1 || curLevel->IsComplete())
         {
             if(curLevel != NULL)
             {
@@ -114,23 +160,22 @@ int main()
                 if(!curLevel->Load())
                 {
                     window.Close();
-                    break;
                 }
             }
             else
             {
-                window.Close();
-                break;
+                SetWinView(window);
             }
         }
-
-        assert(curLevel != NULL);
 
         //  Game Logic
         unsigned int frametime = std::min(window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
         if(inFocus) //no update when inactive
         {
-            curLevel->Update(frametime);
+            if(curLevel != NULL)
+            {
+                curLevel->Update(frametime);
+            }
         }
         else
         {
@@ -140,7 +185,14 @@ int main()
         //  Rendering
 
         window.Clear();
-        window.Draw(*curLevel);
+        if(curLevelIndex < numLevels)
+        {
+            window.Draw(*curLevel);
+        }
+        else
+        {
+            window.Draw(winnerText);
+        }
 
         window.Display();
     }

@@ -11,6 +11,7 @@ const float Constants::GAMEFIELD_HEIGHT = 30.f; //visible gamefield in m
 const float Constants::STATICRECT_BORDERSIZE = -0.1f;
 const float Constants::EDITMODE_CAMSPEED = 20.f/1000.f;
 const sf::Color Constants::PLAYER_COLOR(63, 63, 255);
+const sf::Color Constants::GOAL_COLOR(255, 0, 0, 127);
 
 //  Gameplay affecting
 
@@ -28,8 +29,8 @@ const float Constants::PLAYER_JUMP_FORCE = 50.f;
 
 const sf::Keyboard::Key Constants::PHYSDEBUG_KEY = sf::Keyboard::P;
 const sf::Keyboard::Key Constants::LEVELEDIT_KEY = sf::Keyboard::F1;
-const sf::Keyboard::Key Constants::PREVLEVEL_KEY = sf::Keyboard::F2; // not yet implemented
-const sf::Keyboard::Key Constants::NEXTLEVEL_KEY = sf::Keyboard::F3; // not yet implemented
+const sf::Keyboard::Key Constants::PREVLEVEL_KEY = sf::Keyboard::F2;
+const sf::Keyboard::Key Constants::NEXTLEVEL_KEY = sf::Keyboard::F3;
 const sf::Keyboard::Key Constants::LEVELSAVE_KEY = sf::Keyboard::F5; // F4 was a bad idea - alt+f4 = quit
 
 const sf::Keyboard::Key Constants::MOVEL_KEY = sf::Keyboard::A;

@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "Level.h"
 #include "Helpers.h"
-#include "Box2D/Box2D.h"
+#include <Box2D/Box2D.h>
 
 extern sf::RenderWindow* g_Window;
 
@@ -146,12 +146,6 @@ const bool Player::ProcessEvent(const sf::Event& event)
                 //apply opposite impulse to thing you jumped away from (opposing force)
                 contactor->ApplyLinearImpulse(-impulse, contactPoint);
             }
-            #ifdef _DEBUG
-            else
-            {
-                std::cout<< " Cannot jump " << (contactor != NULL) << " && " << closestDotProduct << " >= 0"<<std::endl;
-            }
-            #endif
         }
         return true;
     }
