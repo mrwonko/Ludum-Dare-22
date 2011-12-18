@@ -13,7 +13,15 @@ const float Constants::EDITMODE_CAMSPEED = 20.f/1000.f;
 const sf::Color Constants::PLAYER_COLOR(63, 63, 255);
 const sf::Color Constants::GOAL_COLOR(0, 255, 0, 127);
 const sf::Color Constants::KILL_COLOR(255, 0, 0);
-const unsigned int Constants::LEVELCHANGE_BLINKTIME = 250;
+const unsigned int Constants::LEVELCHANGE_BLINKTIME = 250; // deprecated
+
+const unsigned int Constants::EXPLOSION_NUM_PARTICLES = 128;
+const unsigned int Constants::EXPLOSION_PARTICLE_LIFETIME_MSEC = 3000;
+const float Constants::EXPLOSION_PARTICLE_SPEED = 5.0f / 1000.f; //random direction
+
+const unsigned int Constants::MOVESPARK_SPACING_MSEC = 10;
+const unsigned int Constants::MOVESPARK_LIFETIME_MSEC = 1000;
+const float Constants::MOVESPARK_SPEED = 0.6f / 1000.f; //down
 
 //  Gameplay affecting
 

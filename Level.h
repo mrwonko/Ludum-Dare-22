@@ -9,6 +9,8 @@
 #include "sfmlBox2DDebugDraw.h"
 #include <SFML/Graphics.hpp>
 #include "UI.h"
+#include "ParticleSystem.h"
+#include <SFML/Audio/Sound.hpp>
 
 class EditAction;
 class Object;
@@ -62,6 +64,8 @@ class Level : public sf::Drawable, public EventListener
 
         const bool InEditMode() const { return mEditMode; }
 
+        ParticleSystem& GetParticleSystem() { return mParticleSystem; }
+
     private:
         void DeleteObjects();
 
@@ -97,6 +101,8 @@ class Level : public sf::Drawable, public EventListener
         EditActionList::iterator mCurrentEditAction;
         sf::Vector2f mEditCameraPosition;
         Status mStatus;
+        ParticleSystem mParticleSystem;
+        sf::Sound mChannel1;
 };
 
 #endif // LEVEL_H

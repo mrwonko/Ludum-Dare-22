@@ -66,10 +66,15 @@
 		<Unit filename="Level.h" />
 		<Unit filename="Object.cpp" />
 		<Unit filename="Object.h" />
+		<Unit filename="Particle.cpp" />
+		<Unit filename="Particle.h" />
+		<Unit filename="ParticleSystem.cpp" />
+		<Unit filename="ParticleSystem.h" />
 		<Unit filename="Player.cpp" />
 		<Unit filename="Player.h" />
 		<Unit filename="StaticRect.cpp" />
 		<Unit filename="StaticRect.h" />
+		<Unit filename="Textures.h" />
 		<Unit filename="Trigger.cpp" />
 		<Unit filename="Trigger.h" />
 		<Unit filename="TriggerKill.cpp" />

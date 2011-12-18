@@ -11,10 +11,12 @@
 #include "EditAction_NewLevelchange.h"
 #include "EditAction_NewKiller.h"
 #include "EditAction_Remove.h"
+#include "Sounds.h"
 
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
 extern EventListenerList g_EventListeners;
 extern sf::RenderWindow* g_Window;
+extern sf::SoundBuffer g_Sounds
 
 Level::Level(const unsigned int index) :
     mDebugPhysics(false),
@@ -126,6 +128,9 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     // Draw Player
     target.Draw(mPlayer);
 
+    // Draw Particles
+    target.Draw(mParticleSystem);
+
     // Draw Debug Physics Overlay
     if(mDebugPhysics)
     {
@@ -228,7 +233,7 @@ const bool Level::ProcessEvent(const sf::Event& event)
             mStatus = ePlaying;
             DeleteObjects();
             Load();
-            //TODO: Clear Particles
+            mParticleSystem.Clear();
             return true;
         }
     }
@@ -312,6 +317,8 @@ void Level::Update(unsigned int deltaT_msec)
             // Update Player
             mPlayer.Update(deltaT_msec);
         }
+        // Update particles
+        mParticleSystem.Update(deltaT_msec);
     }
 }
 
@@ -366,6 +373,6 @@ void Level::RemoveObject(Object* obj)
 
 void Level::Lose()
 {
-    //TODO: Explosion!
+    mParticleSystem.CreateExplosion(mPlayer.GetPosition());
     mStatus = eLost;
 }

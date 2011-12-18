@@ -24,6 +24,14 @@ struct Constants
     static const float EDITMODE_CAMSPEED;
     static const unsigned int LEVELCHANGE_BLINKTIME;
 
+    static const unsigned int EXPLOSION_NUM_PARTICLES;
+    static const unsigned int EXPLOSION_PARTICLE_LIFETIME_MSEC;
+    static const float EXPLOSION_PARTICLE_SPEED;
+
+    static const unsigned int MOVESPARK_SPACING_MSEC; //each N msec a new movement spark is spawned (depends on player speed, too)
+    static const unsigned int MOVESPARK_LIFETIME_MSEC;
+    static const float MOVESPARK_SPEED;
+
     // directly gameplay influencing
     static const float GRAVITY;
     static const float PLAYER_HALFHEIGHT; //let the player be 1.8m high
