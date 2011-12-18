@@ -45,6 +45,9 @@
 		</Linker>
 		<Unit filename="Constants.cpp" />
 		<Unit filename="Constants.h" />
+		<Unit filename="EditAction.h" />
+		<Unit filename="EditAction_Click.cpp" />
+		<Unit filename="EditAction_Click.h" />
 		<Unit filename="EventListener.cpp" />
 		<Unit filename="EventListener.h" />
 		<Unit filename="EventListenerList.cpp" />
@@ -63,6 +66,8 @@
 		<Unit filename="UI.h" />
 		<Unit filename="UIElement.cpp" />
 		<Unit filename="UIElement.h" />
+		<Unit filename="UIText.cpp" />
+		<Unit filename="UIText.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="sfmlBox2DDebugDraw.cpp" />
 		<Unit filename="sfmlBox2DDebugDraw.h" />

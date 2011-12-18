@@ -8,7 +8,9 @@
 #include "EventListener.h"
 #include "sfmlBox2DDebugDraw.h"
 #include <SFML/Graphics.hpp>
+#include "UI.h"
 
+class EditAction;
 class Object;
 
 class Level : public sf::Drawable, public EventListener
@@ -43,6 +45,8 @@ class Level : public sf::Drawable, public EventListener
 
         virtual const bool ProcessEvent(const sf::Event& event);
 
+        const bool InEditMode() const { return mEditMode; }
+
     private:
         /** \return success
             \param out_stream Stream to write into
@@ -57,6 +61,10 @@ class Level : public sf::Drawable, public EventListener
         /// SFML Rendering function
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
 
+        void SetupUIs();
+        void SetupEditActions();
+        void OnEditActionChange();
+
         std::list<Object*> mObjects; ///< Everything but the player
         Player mPlayer; ///< The Player
         bool mDebugPhysics; ///< Show physics debug drawing? (toggle with P)
@@ -65,6 +73,11 @@ class Level : public sf::Drawable, public EventListener
         const unsigned int mIndex; ///< Which level is this?
         bool mEditMode; ///< Whether we're currently in the level editing mode
         sf::Text mEditText;
+        UI mEditUI;
+        UI mGameUI; ///< \note I shouldn't create a new one for each level... But this is Ludum Dare, screw good design XD
+        typedef std::list<EditAction*> EditActionList;
+        EditActionList mEditActions;
+        EditActionList::iterator mCurrentEditAction;
 };
 
 #endif // LEVEL_H

@@ -8,6 +8,7 @@ namespace sf
 {
     template <typename T> class Vector2;
     typedef Vector2<float> Vector2f;
+    class RenderWindow;
 }
 
 // height defined in constants.h, width calculated based on aspect

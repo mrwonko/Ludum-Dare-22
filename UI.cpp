@@ -8,7 +8,10 @@ UI::UI()
 
 UI::~UI()
 {
-    //dtor
+    for(ElementMap::const_iterator it = mElements.begin(); it != mElements.end(); ++it)
+    {
+        delete (it->second);
+    }
 }
 
 /** Element will henceforth be managed by the UI, i.e. will be deleted when the UI is deleted. Get it via name. Any previous item of the same name will be deleted. **/
@@ -54,6 +57,7 @@ void UI::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     sf::View oldView = target.GetView();
     sf::Vector2f dimensions(target.GetWidth(), target.GetHeight());
     sf::View view(dimensions * 0.5f, dimensions);
+    target.SetView(view);
 
     //render elements, calculating their actual positions (i.e. converting negative coordinates)
     for(ElementMap::const_iterator it = mElements.begin(); it != mElements.end(); ++it)

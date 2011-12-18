@@ -1,8 +1,11 @@
 #include "Level.h"
 #include "Helpers.h"
 #include "Object.h"
+#include "UIText.h"
+#include "EditAction.h"
 #include <fstream>
 #include "EventListenerList.h"
+#include "EditAction_Click.h"
 
 static const b2Vec2 gravity(0.f, 0.f);
 extern EventListenerList g_EventListeners;
@@ -17,12 +20,18 @@ Level::Level(const unsigned int index) :
     mWorld.SetAllowSleeping(true);
     mDebugDraw.SetWorld(&mWorld);
     g_EventListeners.PushBack(this);
+    SetupUIs();
+    SetupEditActions();
 }
 
 Level::~Level()
 {
     //clear objects
     for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+    {
+        delete *it;
+    }
+    for(EditActionList::iterator it = mEditActions.begin(); it != mEditActions.end(); ++it)
     {
         delete *it;
     }
@@ -95,14 +104,29 @@ const bool Level::Deserialize(std::istream& stream)
 
 void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
+    // Draw Elements
     for(std::list<Object*>::const_iterator it = mObjects.begin(); it != mObjects.end(); ++it)
     {
         target.Draw(**it);
     }
 
+    // Draw Player
+    target.Draw(mPlayer);
+
+    // Draw Debug Physics Overlay
     if(mDebugPhysics)
     {
         target.Draw(mDebugDraw);
+    }
+
+    // Draw UI
+    if(mEditMode)
+    {
+        target.Draw(mEditUI);
+    }
+    else
+    {
+        target.Draw(mGameUI);
     }
 }
 
@@ -111,15 +135,34 @@ const bool Level::ProcessEvent(const sf::Event& event)
     if(mEditMode)
     {
         //special editmode events - may overwrite base events (because they're handled first - they have priority.)
-        if(event.Type == sf::Event::MouseButtonPressed)
+        //execute the currently selected edit action - switched via mouse wheel
+        if(mCurrentEditAction != mEditActions.end()) //any edit actions?
         {
-            std::vector<b2Body*> bodies = GetBodiesAtPoint(mWorld, b2Vec2(event.MouseButton.X, event.MouseButton.Y));
-            for(std::vector<b2Body*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
+            //does the current edit action handle it?
+            if((*mCurrentEditAction)->ProcessEvent(event))
             {
-                Object* obj = reinterpret_cast<Object*>((*it)->GetUserData());
-                obj->Edit_OnClicked(event.MouseButton.Button);
+                return true;
             }
-            return true;
+            if(event.Type == sf::Event::MouseWheelMoved)
+            {
+                if(event.MouseWheel.Delta < 0)
+                {
+                    ++mCurrentEditAction;
+                    if(mCurrentEditAction == mEditActions.end())
+                    {
+                        mCurrentEditAction = mEditActions.begin();
+                    }
+                }
+                else if(event.MouseWheel.Delta > 0)
+                {
+                    if(mCurrentEditAction == mEditActions.begin())
+                    {
+                        mCurrentEditAction = mEditActions.end();
+                    }
+                    --mCurrentEditAction;
+                }
+                OnEditActionChange(); //update text and whatnot
+            }
         }
     }
     else
@@ -176,4 +219,31 @@ void Level::Update(unsigned int deltaT_msec)
     {
         (*it)->Update(deltaT_msec);
     }
+}
+
+void Level::SetupUIs()
+{
+    UIText* actionText = new UIText;
+    actionText->SetCoordinates(sf::Vector2f(0.f, 0.f));
+    actionText->SetCoordinates(sf::Vector2f(-160.f, 0.f));
+    mEditUI.AddElement("action", actionText);
+}
+
+void Level::SetupEditActions()
+{
+    //add edit actions
+    mEditActions.push_back(new EditAction_Click(this));
+
+    //set current one to first one
+    assert(!mEditActions.empty());
+    mCurrentEditAction = mEditActions.begin();
+    OnEditActionChange();
+}
+
+void Level::OnEditActionChange()
+{
+    EditAction* curAction = *mCurrentEditAction;
+    UIText* actionText = reinterpret_cast<UIText*>(mEditUI.GetElement("action"));
+    assert(actionText != NULL);
+    actionText->SetText(curAction->GetName());
 }

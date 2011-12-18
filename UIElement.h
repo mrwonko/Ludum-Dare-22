@@ -14,8 +14,6 @@ class UIElement : public sf::Drawable
         void SetCoordinates(const sf::Vector2f& coordinates) { mCoordinates = coordinates; }
         const sf::Vector2f& GetCoordinates() const { return mCoordinates; }
 
-        virtual sf::Vector2f GetDimensions() const = 0;
-
     protected:
         /// The screen coordinates, where negative means measured from the other side in opposite direction. Not to be confused with position, the actual position
         sf::Vector2f mCoordinates;
