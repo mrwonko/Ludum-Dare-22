@@ -152,6 +152,10 @@ const bool Player::ProcessEvent(const sf::Event& event)
                     impulseDir.x = -impulseDir.x;
                 }
                 b2Vec2 impulse = Constants::PLAYER_JUMP_FORCE * impulseDir;
+                // stop vertical movement
+                b2Vec2 velocity = mBody->GetLinearVelocity();
+                velocity.y = 0;
+                mBody->SetLinearVelocity(velocity);
                 mBody->ApplyLinearImpulse(impulse, contactPoint);
                 //apply opposite impulse to thing you jumped away from (opposing force)
                 contactor->ApplyLinearImpulse(-impulse, contactPoint);
