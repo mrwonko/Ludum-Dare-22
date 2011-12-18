@@ -20,6 +20,8 @@ class EditAction_NewStaticRect : public EditAction
 
     private:
         StaticRect* mNewRect;
+
+        virtual StaticRect* NewStaticRect() const;
 };
 
 #endif // EDITACTION_NEWSTATICRECT_H

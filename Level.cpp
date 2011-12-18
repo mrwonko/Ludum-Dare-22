@@ -8,6 +8,7 @@
 #include "EventListenerList.h"
 #include "EditAction_Click.h"
 #include "EditAction_NewStaticRect.h"
+#include "EditAction_NewLevelchange.h"
 #include "EditAction_Remove.h"
 
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
@@ -322,6 +323,7 @@ void Level::SetupEditActions()
     mEditActions.push_back(new EditAction_Click(this));
     mEditActions.push_back(new EditAction_Remove(this));
     mEditActions.push_back(new EditAction_NewStaticRect(this));
+    mEditActions.push_back(new EditAction_NewLevelchange(this));
 
     //set current one to first one
     assert(!mEditActions.empty());

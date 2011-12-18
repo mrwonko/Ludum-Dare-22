@@ -21,6 +21,7 @@ struct Constants
 
     static const float STATICRECT_BORDERSIZE;
     static const float EDITMODE_CAMSPEED;
+    static const unsigned int LEVELCHANGE_BLINKTIME;
 
     // directly gameplay influencing
     static const float GRAVITY;

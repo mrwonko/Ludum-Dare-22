@@ -48,6 +48,8 @@
 		<Unit filename="EditAction.h" />
 		<Unit filename="EditAction_Click.cpp" />
 		<Unit filename="EditAction_Click.h" />
+		<Unit filename="EditAction_NewLevelchange.cpp" />
+		<Unit filename="EditAction_NewLevelchange.h" />
 		<Unit filename="EditAction_NewStaticRect.cpp" />
 		<Unit filename="EditAction_NewStaticRect.h" />
 		<Unit filename="EditAction_Remove.cpp" />
@@ -66,6 +68,10 @@
 		<Unit filename="Player.h" />
 		<Unit filename="StaticRect.cpp" />
 		<Unit filename="StaticRect.h" />
+		<Unit filename="Trigger.cpp" />
+		<Unit filename="Trigger.h" />
+		<Unit filename="TriggerLevelchange.cpp" />
+		<Unit filename="TriggerLevelchange.h" />
 		<Unit filename="UI.cpp" />
 		<Unit filename="UI.h" />
 		<Unit filename="UIElement.cpp" />

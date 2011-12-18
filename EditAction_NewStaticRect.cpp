@@ -31,7 +31,7 @@ const bool EditAction_NewStaticRect::ProcessEvent(const sf::Event& event)
             }
             else
             {
-                mNewRect = new StaticRect(mLevel);
+                mNewRect = NewStaticRect();
                 mNewRect->SetCorner1(mousePos);
                 mNewRect->SetCorner2(mousePos);
                 mLevel->AddObject(mNewRect);
@@ -64,4 +64,9 @@ void EditAction_NewStaticRect::OnExit()
         delete mNewRect;
         mNewRect = NULL;
     }
+}
+
+StaticRect* EditAction_NewStaticRect::NewStaticRect() const
+{
+    return new StaticRect(mLevel);
 }

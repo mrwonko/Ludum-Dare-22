@@ -37,6 +37,7 @@ int main()
     int curLevelIndex = -1; // when this == numLevels, we're at the game won screen.
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Mr. Wonkos Ludum Dare 22 Game"); //default style -> close & resize
+    window.EnableKeyRepeat(false); // no holding the jump button
     g_Window = &window;
 
     Level* curLevel = NULL;

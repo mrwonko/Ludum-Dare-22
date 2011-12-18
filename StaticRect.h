@@ -25,7 +25,7 @@ class StaticRect : public Object //, public EventListener //event listener: may 
         virtual void Edit_OnClicked(const sf::Mouse::Button button);
 
     protected:
-        void Update();
+        virtual void UpdateShape();
 
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
 

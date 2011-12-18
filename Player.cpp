@@ -112,13 +112,18 @@ const bool Player::ProcessEvent(const sf::Event& event)
                 float newDotProduct = b2Dot(idealNormal, worldManifold.normal);;
                 if(newDotProduct > closestDotProduct)
                 {
+                    int pointCount = contact->GetManifold()->pointCount;
+                    if(pointCount == 0)
+                    {
+                        //sensors create contacts without contact points. Skip them.
+                        continue;
+                    }
+
                     //set normal, dot product, contactor...
                     closestNormal = worldManifold.normal;
                     closestDotProduct = newDotProduct;
                     contactor = it->other;
                     //... and calculate median contact point.
-                    int pointCount = contact->GetManifold()->pointCount;
-                    assert(pointCount != 0 && "Two touching bodies should never have 0 contact points!");
                     contactPoint = b2Vec2(0, 0);
                     for(int i = 0; i < pointCount; ++i)
                     {
@@ -134,7 +139,6 @@ const bool Player::ProcessEvent(const sf::Event& event)
             {
                 //Impulse depends on direction
                 b2Rot angle(acos(closestDotProduct) / 4.f);
-                std::cout<<"(" << angle.GetYAxis().x << ", " << angle.GetYAxis().y << ")" << std::endl;
                 b2Vec2 impulseDir = angle.GetYAxis();
                 impulseDir.y = -impulseDir.y;
                 if(closestNormal.x < 0)

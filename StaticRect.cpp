@@ -65,7 +65,7 @@ const bool StaticRect::Deserialize(std::istream& stream)
         std::cerr << "Invalid StaticRect format!" << std::endl;
         return false;
     }
-    Update();
+    UpdateShape();
     return true;
 }
 
@@ -77,22 +77,22 @@ void StaticRect::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 void StaticRect::SetCorner1(const sf::Vector2f& pos)
 {
     mCorner1 = pos;
-    Update();
+    UpdateShape();
 }
 
 void StaticRect::SetCorner2(const sf::Vector2f& pos)
 {
     mCorner2 = pos;
-    Update(); //unnecessarily updates physics body as well... could care less *shrug*
+    UpdateShape(); //unnecessarily updates physics body as well... could care less *shrug*
 }
 
 void StaticRect::SetColor(const sf::Color& color)
 {
     mColor = color;
-    Update();
+    UpdateShape();
 }
 
-void StaticRect::Update()
+void StaticRect::UpdateShape()
 {
     sf::Vector2f size = mCorner2 - mCorner1;
     sf::Vector2f center = mCorner1 + 0.5f * size ;
