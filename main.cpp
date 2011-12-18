@@ -154,7 +154,6 @@ int main()
                         curLevelIndex = numLevels;
                         ++numLevels;
                         curLevel = new Level(curLevelIndex);
-                        assert(curLevel->Save());
                     }
                     else
                     {
