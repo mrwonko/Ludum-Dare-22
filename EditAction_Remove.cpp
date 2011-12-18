@@ -25,8 +25,11 @@ const bool EditAction_Remove::ProcessEvent(const sf::Event& event)
         for(std::vector<b2Body*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
         {
             Object* obj = reinterpret_cast<Object*>((*it)->GetUserData());
-            mLevel->RemoveObject(obj);
-            delete obj;
+            if(obj->GetType() != "Player") //don't want to remove the player
+            {
+                mLevel->RemoveObject(obj);
+                delete obj;
+            }
         }
         return true;
     }

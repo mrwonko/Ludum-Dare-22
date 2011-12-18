@@ -50,6 +50,8 @@ class Level : public sf::Drawable, public EventListener
         const bool InEditMode() const { return mEditMode; }
 
     private:
+        void DeleteObjects();
+
         /** \return success
             \param out_stream Stream to write into
         **/
@@ -68,12 +70,12 @@ class Level : public sf::Drawable, public EventListener
         void OnEditActionChange();
 
         std::list<Object*> mObjects; ///< Everything but the player
-        Player mPlayer; ///< The Player
         bool mDebugPhysics; ///< Show physics debug drawing? (toggle with P)
         sfmlBox2DDebugDraw mDebugDraw; ///< Physics debug drawing
         b2World mWorld; ///< Physical World
         const unsigned int mIndex; ///< Which level is this?
         bool mEditMode; ///< Whether we're currently in the level editing mode
+        Player mPlayer; ///< The Player (after world since it creates Box2D Objects
         sf::Text mEditText;
         UI mEditUI;
         UI mGameUI; ///< \note I shouldn't create a new one for each level... But this is Ludum Dare, screw good design XD

@@ -10,16 +10,16 @@
 #include "EditAction_NewStaticRect.h"
 #include "EditAction_Remove.h"
 
-static const b2Vec2 gravity(0.f, 0.f);
+static const b2Vec2 gravity(0.f, Constants::GRAVITY);
 extern EventListenerList g_EventListeners;
 extern sf::RenderWindow* g_Window;
 
 Level::Level(const unsigned int index) :
-    mPlayer(this),
     mDebugPhysics(false),
     mWorld(gravity),
     mIndex(index),
-    mEditMode(false)
+    mEditMode(false),
+    mPlayer(this) //after world (.h counts)
 {
     mWorld.SetAllowSleeping(true);
     mDebugDraw.SetWorld(&mWorld);
@@ -30,16 +30,22 @@ Level::Level(const unsigned int index) :
 
 Level::~Level()
 {
-    //clear objects
-    for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
-    {
-        delete *it;
-    }
+    DeleteObjects();
     for(EditActionList::iterator it = mEditActions.begin(); it != mEditActions.end(); ++it)
     {
         delete *it;
     }
     g_EventListeners.Remove(this);
+}
+
+void Level::DeleteObjects()
+{
+    //clear objects
+    for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+    {
+        delete *it;
+    }
+    mObjects.clear();
 }
 
 const bool Level::Serialize(std::ostream& out_stream) const
@@ -181,6 +187,10 @@ const bool Level::ProcessEvent(const sf::Event& event)
     else
     {
         //gameplay events - disabled in edit mode
+        if(mPlayer.ProcessEvent(event))
+        {
+            return true;
+        }
     }
     //events that are always handled, no matter if editmode is enabled
     if(event.Type == sf::Event::KeyPressed)
@@ -205,6 +215,12 @@ const bool Level::ProcessEvent(const sf::Event& event)
             {
                 SetViewPos(*g_Window, mPlayer.GetPosition());
             }
+            return true;
+        }
+        if(event.Key.Code == Constants::RELOAD_KEY)
+        {
+            DeleteObjects();
+            Load();
             return true;
         }
     }
@@ -284,11 +300,13 @@ void Level::Update(unsigned int deltaT_msec)
     {
         // Update Physics
         mWorld.Step(deltaT_msec / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
-        // Update Objects
+        // Update Objects - after physics so they can update accordingly
         for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
         {
             (*it)->Update(deltaT_msec);
         }
+        // Update Player
+        mPlayer.Update(deltaT_msec);
     }
 }
 

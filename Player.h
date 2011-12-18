@@ -3,6 +3,8 @@
 
 #include "Object.h"
 
+class b2Body;
+
 class Player : public Object
 {
     public:
@@ -17,8 +19,13 @@ class Player : public Object
         /** \return Whether the event was used **/
         const bool ProcessEvent(const sf::Event& event);
 
+        virtual void Update(unsigned int deltaT_msec);
+
     private:
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+        b2Body* mBody;
+        sf::Shape mRepresentative;
+        bool mJumpedThisFrame;
 };
 
 #endif // PLAYER_H

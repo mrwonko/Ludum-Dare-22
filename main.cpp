@@ -62,7 +62,7 @@ int main()
 
     SetViewPos(window, sf::Vector2f(0, 0));
 
-
+    bool inFocus = true;
     while(window.IsOpened())
     {
         //  Event Handling
@@ -80,6 +80,16 @@ int main()
                 {
                     //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
                     SetViewPos(window, window.GetView().GetCenter());
+                }
+            case sf::Event::LostFocus:
+                {
+                    inFocus = false;
+                    break;
+                }
+            case sf::Event::GainedFocus:
+                {
+                    inFocus = true;
+                    break;
                 }
             default:
                 {
@@ -118,7 +128,14 @@ int main()
 
         //  Game Logic
         unsigned int frametime = std::min(window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
-        curLevel->Update(frametime);
+        if(inFocus) //no update when inactive
+        {
+            curLevel->Update(frametime);
+        }
+        else
+        {
+            sf::Sleep(5); //also, don't clog the cpu
+        }
 
         //  Rendering
 
