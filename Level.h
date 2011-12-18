@@ -95,7 +95,8 @@ class Level : public sf::Drawable, public EventListener
         Player mPlayer; ///< The Player (after world since it creates Box2D Objects
         sf::Text mEditText;
         UI mEditUI;
-        UI mGameUI; ///< \note I shouldn't create a new one for each level... But this is Ludum Dare, screw good design XD
+        UI mGameUI; ///< \note I shouldn't create a new one for each level... But this is Ludum Dare, screw good design XD (I don't actually have any ingame UI)
+        UI mGameOverUI;
         typedef std::list<EditAction*> EditActionList;
         EditActionList mEditActions;
         EditActionList::iterator mCurrentEditAction;

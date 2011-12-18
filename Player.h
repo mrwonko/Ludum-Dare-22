@@ -28,6 +28,7 @@ class Player : public Object
         sf::Shape mRepresentative;
         bool mJumpedThisFrame;
         sf::Sound mJumpChannel;
+        float mNextMoveSparkTime; //time until next movespark is spawned
 };
 
 #endif // PLAYER_H

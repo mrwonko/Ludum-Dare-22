@@ -64,7 +64,6 @@ void ParticleSystem::Render(sf::RenderTarget& target, sf::Renderer& renderer) co
 
 void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
 {
-    std::cout<<"Create Explosion..."<<std::endl;
     Particle pattern;
     boost::uniform_01<boost::mt19937> FloatGenerator(s_rng);
     pattern.SetTexture(g_Textures.Explosion, true);
@@ -80,5 +79,18 @@ void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
         p->SetRotation(movedir / M_PI * 180.f);
         mParticles.push_back(p);
     }
-    std::cout<<"...done!"<<std::endl;
+}
+
+void ParticleSystem::CreateMoveSpark(const sf::Vector2f& pos, const float sizeMult)
+{
+    Particle* p = new Particle;
+    p->SetTexture(g_Textures.Spark, true);
+    float size = 0.02f * sizeMult;
+    p->SetScale(size, size);
+    p->SetOrigin(g_Textures.Spark.GetWidth()/2, g_Textures.Spark.GetHeight()/2);
+    p->SetBlendMode(sf::Blend::Add);
+    p->TotalLifetime_msec = p->RemainingLife_msec = Constants::MOVESPARK_LIFETIME_MSEC;
+    p->SetPosition(pos);
+    p->Velocity = Constants::MOVESPARK_SPEED * sf::Vector2f(0, 1);
+    mParticles.push_back(p);
 }

@@ -144,7 +144,14 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     }
     else
     {
-        target.Draw(mGameUI);
+        if(mStatus == ePlaying)
+        {
+            target.Draw(mGameUI);
+        }
+        else
+        {
+            target.Draw(mGameOverUI);
+        }
     }
 }
 
@@ -328,11 +335,18 @@ void Level::SetupUIs()
 {
     //  Game UI
     //...
+
     //  Edit UI
     //current action
     UIText* actionText = new UIText;
     actionText->SetCoordinates(sf::Vector2f(0.f, 0.f));
     mEditUI.AddElement("action", actionText);
+
+    //  Game Over UI
+    UIText* retryText = new UIText;
+    retryText->SetText("Press R to retry");
+    retryText->SetCoordinates(sf::Vector2f(0.f, 0.f));
+    mGameOverUI.AddElement("retry", retryText);
 }
 
 void Level::SetupEditActions()

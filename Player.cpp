@@ -10,7 +10,8 @@ extern sf::RenderWindow* g_Window;
 Player::Player(Level* const level):
     Object(level),
     mRepresentative(sf::Shape::Rectangle(-Constants::PLAYER_HALFWIDTH, -Constants::PLAYER_HALFHEIGHT, 2 * Constants::PLAYER_HALFWIDTH, 2 * Constants::PLAYER_HALFHEIGHT, Constants::PLAYER_COLOR)),
-    mJumpedThisFrame(false)
+    mJumpedThisFrame(false),
+    mNextMoveSparkTime(Constants::MOVESPARK_SPACING_MSEC)
 {
     //ctor
     b2World& world = mLevel->GetWorld();
@@ -179,8 +180,59 @@ void Player::Update(unsigned int deltaT_msec)
     {
         mBody->ApplyForce(b2Vec2(Constants::PLAYER_MOVE_FORCE, 0), mBody->GetPosition());
     }
+    //move left
     if(sf::Keyboard::IsKeyPressed(Constants::MOVEL_KEY) && mBody->GetLinearVelocity().x > -Constants::PLAYER_MAX_VELOCITY)
     {
         mBody->ApplyForce(b2Vec2(-Constants::PLAYER_MOVE_FORCE, 0), mBody->GetPosition());
+    }
+    // draw movement sprites if player moves on a wall/floor/...
+
+    //is it time for new sparks yet?
+    mNextMoveSparkTime -= deltaT_msec;
+    if(mNextMoveSparkTime > 0)
+    {
+        return;
+    }
+    mNextMoveSparkTime += Constants::MOVESPARK_SPACING_MSEC;
+
+    //is player fast enough for sparks?
+    float speedmult = mBody->GetLinearVelocity().LengthSquared() / (Constants::PLAYER_MAX_VELOCITY * Constants::PLAYER_MAX_VELOCITY);
+    if(speedmult < 0.5f)
+    {
+        return;
+    }
+
+    b2Vec2 unitVelocity = mBody->GetLinearVelocity();
+    unitVelocity.Normalize();
+
+    // is player touching anything?
+    for(const b2ContactEdge* it = mBody->GetContactList(); it != NULL; it = it->next)
+    {
+        b2Contact* contact = it->contact;
+        if(!contact->IsTouching())
+        {
+            continue;
+        }
+        // get manifold in world coordinates
+        b2WorldManifold worldManifold;
+        contact->GetWorldManifold(&worldManifold);
+
+        float dot = b2Dot(unitVelocity, worldManifold.normal); // 0 = perpendicular - that's the best one
+        float anglemult = 1.f - std::abs(dot); //the closer to 1 the better.
+
+        int pointCount = contact->GetManifold()->pointCount;
+        if(pointCount == 0)
+        {
+            //sensors create contacts without contact points. Skip them.
+            continue;
+        }
+        b2Vec2 contactPoint;
+        for(int i = 0; i < pointCount; ++i)
+        {
+            contactPoint = contactPoint + worldManifold.points[i];
+        }
+        contactPoint = 1.f/pointCount * contactPoint;
+
+        mLevel->GetParticleSystem().CreateMoveSpark(sf::Vector2f(contactPoint.x, contactPoint.y), speedmult * anglemult);
     }
 }
