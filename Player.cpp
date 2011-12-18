@@ -187,6 +187,12 @@ void Player::Update(unsigned int deltaT_msec)
     {
         mBody->ApplyForce(b2Vec2(-Constants::PLAYER_MOVE_FORCE, 0), mBody->GetPosition());
     }
+    //move up - only if already moving up (jump height control)
+    if((sf::Keyboard::IsKeyPressed(Constants::JUMP_KEY) || sf::Keyboard::IsKeyPressed(Constants::MOVEU_KEY) ) && mBody->GetLinearVelocity().y < 0)
+    {
+        mBody->ApplyForce(b2Vec2(0.f, -Constants::PLAYER_JUMP_AIR_FORCE), mBody->GetPosition());
+    }
+
     // draw movement sprites if player moves on a wall/floor/...
 
     //is it time for new sparks yet?

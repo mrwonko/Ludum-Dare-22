@@ -33,7 +33,8 @@ const float Constants::PLAYER_FRICTION = 0.1f;
 const float Constants::PLAYER_DENSITY = 5.f;
 const float Constants::PLAYER_MAX_VELOCITY = 15.0f; //fastest speed /through player input/
 const float Constants::PLAYER_MOVE_FORCE = 80.f;
-const float Constants::PLAYER_JUMP_FORCE = 50.f;
+const float Constants::PLAYER_JUMP_FORCE = 30.f;
+const float Constants::PLAYER_JUMP_AIR_FORCE = 50.f;
 
 //  Input
 

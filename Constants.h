@@ -42,6 +42,7 @@ struct Constants
     static const float PLAYER_MAX_VELOCITY;
     static const float PLAYER_MOVE_FORCE;
     static const float PLAYER_JUMP_FORCE;
+    static const float PLAYER_JUMP_AIR_FORCE;
 
     // input
     static const sf::Keyboard::Key PHYSDEBUG_KEY;
