@@ -130,4 +130,13 @@ void StaticRect::Edit_OnClicked(const sf::Mouse::Button button)
         }
         SetColor(sColors[mColorIndex]);
     }
+    else if(button == sf::Mouse::Right)
+    {
+        if(mColorIndex <= 0) //shouldn't be smaller but better safe than sorry
+        {
+            mColorIndex = sColors.size();
+        }
+        --mColorIndex;
+        SetColor(sColors[mColorIndex]);
+    }
 }
