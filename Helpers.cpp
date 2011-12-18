@@ -93,8 +93,8 @@ sf::Vector2f ProcessEditMousePos(const sf::Vector2f& pos)
     sf::Vector2f mousePos = ScreenToWorldSpace(pos);
     if(sf::Keyboard::IsKeyPressed(sf::Keyboard::LControl))
     {
-        mousePos.x = int(mousePos.x + 0.5f);
-        mousePos.y = int(mousePos.y + 0.5f);
+        mousePos.x = roundf(mousePos.x);
+        mousePos.y = roundf(mousePos.y);
     }
     return mousePos;
 }
