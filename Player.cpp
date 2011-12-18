@@ -2,7 +2,9 @@
 #include "Level.h"
 #include "Helpers.h"
 #include <Box2D/Box2D.h>
+#include "Sounds.h"
 
+extern Sounds g_Sounds;
 extern sf::RenderWindow* g_Window;
 
 Player::Player(Level* const level):
@@ -29,6 +31,8 @@ Player::Player(Level* const level):
     fixDef.friction = Constants::PLAYER_FRICTION;
     fixDef.density = Constants::PLAYER_DENSITY;
     mBody->CreateFixture(&fixDef);
+
+    mJumpChannel.SetBuffer(g_Sounds.Jump);
 }
 
 Player::~Player()
@@ -152,6 +156,8 @@ const bool Player::ProcessEvent(const sf::Event& event)
                 mBody->ApplyLinearImpulse(impulse, contactPoint);
                 //apply opposite impulse to thing you jumped away from (opposing force)
                 contactor->ApplyLinearImpulse(-impulse, contactPoint);
+                //Play jump sound
+                mJumpChannel.Play();
             }
         }
         return true;

@@ -16,7 +16,7 @@
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
 extern EventListenerList g_EventListeners;
 extern sf::RenderWindow* g_Window;
-extern sf::SoundBuffer g_Sounds
+extern Sounds g_Sounds;
 
 Level::Level(const unsigned int index) :
     mDebugPhysics(false),
@@ -253,6 +253,8 @@ const bool Level::Load()
         std::cerr << "Error deserializing from \"" << GetLevelName(mIndex) << "\"!" << std::endl;
         return false;
     }
+    mChannel1.SetBuffer(g_Sounds.Start);
+    mChannel1.Play();
     return true;
 }
 
@@ -375,4 +377,6 @@ void Level::Lose()
 {
     mParticleSystem.CreateExplosion(mPlayer.GetPosition());
     mStatus = eLost;
+    mChannel1.SetBuffer(g_Sounds.Death);
+    mChannel1.Play();
 }

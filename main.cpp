@@ -5,11 +5,13 @@
 #include "Level.h"
 #include "EventListenerList.h"
 #include "Textures.h"
+#include "Sounds.h"
 
 EventListenerList g_EventListeners;
 sf::Font g_Font;
 sf::RenderWindow* g_Window = NULL;
 Textures g_Textures;
+Sounds g_Sounds;
 
 namespace
 {
@@ -31,6 +33,11 @@ int main()
     if(!g_Textures.Load())
     {
         std::cerr << "Could not load textures!" << std::endl;
+        return 0;
+    }
+    if(!g_Sounds.Load())
+    {
+        std::cerr << "Could not load sounds!" << std::endl;
         return 0;
     }
     int numLevels = GetLevelCount();

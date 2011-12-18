@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "Object.h"
+#include <SFML/Audio/Sound.hpp>
 
 class b2Body;
 
@@ -26,6 +27,7 @@ class Player : public Object
         b2Body* mBody;
         sf::Shape mRepresentative;
         bool mJumpedThisFrame;
+        sf::Sound mJumpChannel;
 };
 
 #endif // PLAYER_H
