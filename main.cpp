@@ -151,8 +151,9 @@ int main()
                             delete curLevel;
                             g_EventListeners.Clear();
                         }
+                        curLevelIndex = numLevels;
                         ++numLevels;
-                        curLevel = new Level(++curLevelIndex);
+                        curLevel = new Level(curLevelIndex);
                         assert(curLevel->Save());
                     }
                     else
