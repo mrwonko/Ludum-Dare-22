@@ -240,6 +240,7 @@ const bool Level::ProcessEvent(const sf::Event& event)
         {
             mStatus = ePlaying;
             DeleteObjects();
+            mPlayer.SetPosition(sf::Vector2f(0.f, 0.f)); //in case loading fails due to unsafed map
             Load();
             mParticleSystem.Clear();
             return true;
