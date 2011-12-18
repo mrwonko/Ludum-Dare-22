@@ -1,0 +1,26 @@
+-9.56601 9.83071
+8
+	StaticRect
+		-11 3 2 5 255 255 255 255
+
+	TriggerKill
+		2 3 7 5 255 0 0 255
+
+	TriggerKill
+		14 11 6 13 255 0 0 255
+
+	StaticRect
+		16 -5 14 13 255 255 255 255
+
+	StaticRect
+		-13 13 -11 -5 255 255 255 255
+
+	StaticRect
+		-11 -5 14 -3 255 255 255 255
+
+	StaticRect
+		-11 11 6 13 255 255 255 255
+
+	TriggerLevelchange
+		-11 3 -9 1 0 255 0 127
+
