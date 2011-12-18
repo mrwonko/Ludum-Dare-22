@@ -22,6 +22,8 @@ class Player : public Object
 
         virtual void Update(unsigned int deltaT_msec);
 
+        void SetPosition(const sf::Vector2f& pos);
+
     private:
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         b2Body* mBody;

@@ -144,6 +144,17 @@ int main()
                             }
                         }
                     }
+                    else if (ev.Key.Code == sf::Keyboard::F6) //can't be arsed to add constant
+                    {
+                        if(curLevelIndex < numLevels)
+                        {
+                            delete curLevel;
+                            g_EventListeners.Clear();
+                        }
+                        ++numLevels;
+                        curLevel = new Level(++curLevelIndex);
+                        assert(curLevel->Save());
+                    }
                     else
                     {
                         g_EventListeners.ProcessEvent(ev);

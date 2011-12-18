@@ -2,6 +2,7 @@
 #include "StaticRect.h"
 #include "Level.h"
 #include "Helpers.h"
+#include <algorithm>
 
 EditAction_NewStaticRect::EditAction_NewStaticRect(Level* const level) :
     EditAction(level),
@@ -23,7 +24,7 @@ const bool EditAction_NewStaticRect::ProcessEvent(const sf::Event& event)
         if(event.MouseButton.Button == sf::Mouse::Left)
         {
             sf::Vector2f mousePos(event.MouseButton.X, event.MouseButton.Y);
-            mousePos = ScreenToWorldSpace(mousePos);
+            mousePos = ProcessEditMousePos(sf::Vector2f(mousePos));
             if(mNewRect)
             {
                 mNewRect->SetCorner2(mousePos);
@@ -49,8 +50,7 @@ const bool EditAction_NewStaticRect::ProcessEvent(const sf::Event& event)
     else if(event.Type == sf::Event::MouseMoved && mNewRect != NULL)
     {
         sf::Vector2f mousePos(event.MouseMove.X, event.MouseMove.Y);
-        mousePos = ScreenToWorldSpace(mousePos);
-        mNewRect->SetCorner2(mousePos);
+        mNewRect->SetCorner2(ProcessEditMousePos(sf::Vector2f(mousePos)));
     }
     return false;
 }

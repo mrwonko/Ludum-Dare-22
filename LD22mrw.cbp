@@ -48,6 +48,8 @@
 		<Unit filename="EditAction.h" />
 		<Unit filename="EditAction_Click.cpp" />
 		<Unit filename="EditAction_Click.h" />
+		<Unit filename="EditAction_MovePlayer.cpp" />
+		<Unit filename="EditAction_MovePlayer.h" />
 		<Unit filename="EditAction_NewKiller.cpp" />
 		<Unit filename="EditAction_NewKiller.h" />
 		<Unit filename="EditAction_NewLevelchange.cpp" />
@@ -66,12 +68,12 @@
 		<Unit filename="Level.h" />
 		<Unit filename="Object.cpp" />
 		<Unit filename="Object.h" />
-		<Unit filename="Particle.cpp" />
 		<Unit filename="Particle.h" />
 		<Unit filename="ParticleSystem.cpp" />
 		<Unit filename="ParticleSystem.h" />
 		<Unit filename="Player.cpp" />
 		<Unit filename="Player.h" />
+		<Unit filename="Sounds.h" />
 		<Unit filename="StaticRect.cpp" />
 		<Unit filename="StaticRect.h" />
 		<Unit filename="Textures.h" />

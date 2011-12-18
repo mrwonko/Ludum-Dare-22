@@ -64,8 +64,6 @@ const bool Player::Deserialize(std::istream& stream)
         return false;
     }
     SetPosition(pos);
-    mBody->SetTransform(b2Vec2(pos.x, pos.y), 0);
-    mBody->SetLinearVelocity(b2Vec2(0, 0));
     return true;
 }
 
@@ -172,7 +170,7 @@ void Player::Update(unsigned int deltaT_msec)
     if(mBody->IsAwake())
     {
         const b2Vec2& pos = mBody->GetPosition();
-        SetPosition(pos.x, pos.y);
+        sf::Drawable::SetPosition(pos.x, pos.y);
         SetViewPos(*g_Window, sf::Vector2f(pos.x, pos.y));
     }
     //move right
@@ -235,4 +233,11 @@ void Player::Update(unsigned int deltaT_msec)
 
         mLevel->GetParticleSystem().CreateMoveSpark(sf::Vector2f(contactPoint.x, contactPoint.y), speedmult * anglemult);
     }
+}
+
+void Player::SetPosition(const sf::Vector2f& pos)
+{
+    sf::Drawable::SetPosition(pos);
+    mBody->SetTransform(b2Vec2(pos.x, pos.y), 0);
+    mBody->SetLinearVelocity(b2Vec2(0, 0));
 }

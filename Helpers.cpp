@@ -87,3 +87,14 @@ sf::Vector2f ScreenToWorldSpace(const sf::Vector2f& screenSpaceCoord)
     const sf::Vector2f viewCorner = g_Window->GetView().GetCenter() - 0.5f * viewSize;
     return sf::Vector2f(viewCorner.x + screenSpaceCoord.x * viewSize.x / g_Window->GetWidth(), viewCorner.y + screenSpaceCoord.y * viewSize.y / g_Window->GetHeight());
 }
+
+sf::Vector2f ProcessEditMousePos(const sf::Vector2f& pos)
+{
+    sf::Vector2f mousePos = ScreenToWorldSpace(pos);
+    if(sf::Keyboard::IsKeyPressed(sf::Keyboard::LControl))
+    {
+        mousePos.x = int(mousePos.x + 0.5f);
+        mousePos.y = int(mousePos.y + 0.5f);
+    }
+    return mousePos;
+}

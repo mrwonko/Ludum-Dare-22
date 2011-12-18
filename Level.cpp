@@ -11,6 +11,7 @@
 #include "EditAction_NewLevelchange.h"
 #include "EditAction_NewKiller.h"
 #include "EditAction_Remove.h"
+#include "EditAction_MovePlayer.h"
 #include "Sounds.h"
 
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
@@ -342,6 +343,18 @@ void Level::SetupUIs()
     actionText->SetCoordinates(sf::Vector2f(0.f, 0.f));
     mEditUI.AddElement("action", actionText);
 
+    UIText* helpText = new UIText;
+    helpText->SetCoordinates(sf::Vector2f(0.f, -200.f));
+    helpText->SetText("F2 and F3 change the level\nF5 saves\nR reloads\nF6 adds a new level (at the end)\nHold control to snap\nScroll mousewheel to change tool");
+    mEditUI.AddElement("help", helpText);
+
+    UIText* levelText = new UIText;
+    std::stringstream ss;
+    ss << "Level " << mIndex;
+    levelText->SetText(ss.str());
+    levelText->SetCoordinates(sf::Vector2f(-100.f, 0.f));
+    mEditUI.AddElement("level", levelText);
+
     //  Game Over UI
     UIText* retryText = new UIText;
     retryText->SetText("Press R to retry");
@@ -357,6 +370,7 @@ void Level::SetupEditActions()
     mEditActions.push_back(new EditAction_NewStaticRect(this));
     mEditActions.push_back(new EditAction_NewLevelchange(this));
     mEditActions.push_back(new EditAction_NewKiller(this));
+    mEditActions.push_back(new EditAction_MovePlayer(this));
 
     //set current one to first one
     assert(!mEditActions.empty());

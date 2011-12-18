@@ -20,6 +20,7 @@ const std::string GetLevelName(unsigned int index);
 
 // uses g_Window - yep, I start quick & dirty hacking.
 sf::Vector2f ScreenToWorldSpace(const sf::Vector2f& screenSpaceCoord);
+sf::Vector2f ProcessEditMousePos(const sf::Vector2f& pos);
 
 
 class b2World;

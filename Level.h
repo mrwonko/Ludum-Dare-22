@@ -66,6 +66,8 @@ class Level : public sf::Drawable, public EventListener
 
         ParticleSystem& GetParticleSystem() { return mParticleSystem; }
 
+        void SetPlayerPosition(const sf::Vector2f& pos) { mPlayer.SetPosition(pos); }
+
     private:
         void DeleteObjects();
 
