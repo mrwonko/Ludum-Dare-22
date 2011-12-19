@@ -1,0 +1,44 @@
+0 0
+14
+	StaticRect
+		-1 1 1 3 255 255 255 255
+
+	StaticRect
+		-1 1 -3 -14 255 255 255 255
+
+	TriggerKill
+		9 1 7 -1 255 0 0 255
+
+	TriggerKill
+		7 -1 5 -3 255 0 0 255
+
+	TriggerKill
+		5 -3 3 -5 255 0 0 255
+
+	TriggerKill
+		3 -7 1 1 255 0 0 255
+
+	TriggerKill
+		-1 -16 3 -14 255 0 0 255
+
+	TriggerKill
+		3 -14 5 -12 255 0 0 255
+
+	TriggerKill
+		5 -12 7 -10 255 0 0 255
+
+	TriggerKill
+		9 1 11 3 255 0 0 255
+
+	StaticRect
+		11 -14 9 -16 255 255 255 255
+
+	StaticRect
+		11 -14 13 1 255 255 255 255
+
+	TriggerLevelchange
+		9 -14 11 -13 0 255 0 127
+
+	TriggerKill
+		9 -14 7 -8 255 0 0 255
+
