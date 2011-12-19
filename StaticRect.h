@@ -5,6 +5,7 @@
 #include "EventListener.h"
 
 class b2Body;
+class b2Vec2;
 class b2Fixture;
 
 class StaticRect : public Object //, public EventListener //event listener: may need this if I want to react to different events in edit mode?
@@ -39,6 +40,10 @@ class StaticRect : public Object //, public EventListener //event listener: may 
         b2Fixture* mFixture;
 
         static std::vector<sf::Color> sColors;
+
+        virtual void CreateBody(const b2Vec2& pos);
+
+        virtual void CreateFixture(const float hsizeX, const float hsizeY);
 };
 
 #endif // STATICRECT_H

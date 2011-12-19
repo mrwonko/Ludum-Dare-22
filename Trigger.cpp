@@ -3,7 +3,8 @@
 
 Trigger::Trigger(Level* const level) :
     StaticRect(level),
-    mPlayerWasInside(false)
+    mPlayerWasInside(false),
+    mIsSensor(true)
 {
     //ctor
 }
@@ -48,7 +49,7 @@ void Trigger::UpdateShape()
     shape.SetAsBox(std::abs(size.x/2), std::abs(size.y/2));
     b2FixtureDef fixDef;
     fixDef.shape = &shape;
-    fixDef.isSensor = true; //No collision!
+    fixDef.isSensor = mIsSensor; //No collision!
     fixDef.density = 0;
     mFixture = mBody->CreateFixture(&fixDef); // second param is mass, not used here
 }

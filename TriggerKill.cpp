@@ -5,6 +5,7 @@ TriggerKill::TriggerKill(Level* const level) :
     Trigger(level)
 {
     StaticRect::SetColor(Constants::KILL_COLOR);
+    mIsSensor = false; //objects can collide!
 }
 
 TriggerKill::~TriggerKill()

@@ -96,25 +96,37 @@ void StaticRect::UpdateShape()
 {
     sf::Vector2f size = mCorner2 - mCorner1;
     sf::Vector2f center = mCorner1 + 0.5f * size ;
-    mShape = sf::Shape::Rectangle(mCorner1.x, mCorner1.y, size.x, size.y, mColor, Constants::STATICRECT_BORDERSIZE, mColor);
+    mShape = sf::Shape::Rectangle(-size.x/2, -size.y/2, size.x, size.y, mColor, Constants::STATICRECT_BORDERSIZE, mColor);
+    mShape.SetPosition(center);
     mShape.EnableFill(false);
+
+    CreateBody(b2Vec2(center.x, center.y));
+    CreateFixture(std::abs(size.x/2), std::abs(size.y/2));
+}
+
+void StaticRect::CreateBody(const b2Vec2& pos)
+{
     if(!mBody)
     {
         b2BodyDef def;
-        def.position.Set(center.x, center.y);
+        def.position = pos;
         def.userData = this;
         mBody = mLevel->GetWorld().CreateBody(&def);
     }
     else
     {
-        mBody->SetTransform(b2Vec2(center.x, center.y), mBody->GetAngle());
+        mBody->SetTransform(pos, 0);
     }
+}
+
+void StaticRect::CreateFixture(const float hsizeX, const float hsizeY)
+{
     if(mFixture)
     {
         mBody->DestroyFixture(mFixture);
     }
     b2PolygonShape shape;
-    shape.SetAsBox(std::abs(size.x/2), std::abs(size.y/2));
+    shape.SetAsBox(hsizeX, hsizeY);
     mFixture = mBody->CreateFixture(&shape, 0.f); // second param is mass, not used here
 }
 
@@ -132,7 +144,7 @@ void StaticRect::Edit_OnClicked(const sf::Mouse::Button button)
     }
     else if(button == sf::Mouse::Right)
     {
-        if(mColorIndex <= 0) //shouldn't be smaller but better safe than sorry
+        if(mColorIndex == 0) //cannot be smaller, is unsigned
         {
             mColorIndex = sColors.size();
         }
