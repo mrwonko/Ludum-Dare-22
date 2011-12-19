@@ -53,7 +53,6 @@ void ParticleSystem::Update(unsigned int deltaT_msec)
     }
 }
 
-#include <iostream>
 void ParticleSystem::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     for(ParticleList::const_iterator it = mParticles.begin(); it != mParticles.end(); ++it)

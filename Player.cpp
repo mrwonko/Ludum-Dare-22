@@ -234,7 +234,7 @@ void Player::Update(unsigned int deltaT_msec)
             //sensors create contacts without contact points. Skip them.
             continue;
         }
-        b2Vec2 contactPoint;
+        b2Vec2 contactPoint(0, 0);
         for(int i = 0; i < pointCount; ++i)
         {
             contactPoint = contactPoint + worldManifold.points[i];
