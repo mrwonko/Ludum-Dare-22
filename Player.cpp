@@ -251,3 +251,9 @@ void Player::SetPosition(const sf::Vector2f& pos)
     mBody->SetTransform(b2Vec2(pos.x, pos.y), 0);
     mBody->SetLinearVelocity(b2Vec2(0, 0));
 }
+
+void Player::Stop()
+{
+    mBody->SetLinearVelocity(b2Vec2(0, 0));
+    mBody->SetAwake(false);
+}

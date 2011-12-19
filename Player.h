@@ -24,6 +24,8 @@ class Player : public Object
 
         void SetPosition(const sf::Vector2f& pos);
 
+        void Stop();
+
     private:
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         b2Body* mBody;

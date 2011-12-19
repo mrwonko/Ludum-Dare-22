@@ -413,4 +413,5 @@ void Level::Lose()
     mStatus = eLost;
     mChannel1.SetBuffer(g_Sounds.Death);
     mChannel1.Play();
+    mPlayer.Stop(); // or the physical body would move further, potentially dying again or even winning.
 }
