@@ -1,5 +1,5 @@
 #include "EditAction_Remove.h"
-#include "helpers.h"
+#include "Helpers.h"
 #include "Level.h"
 #include <Box2D/Box2D.h>
 #include <SFML/Window/Event.hpp>
