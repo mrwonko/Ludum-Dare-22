@@ -19,22 +19,17 @@ const unsigned int Constants::EXPLOSION_NUM_PARTICLES = 128;
 const unsigned int Constants::EXPLOSION_PARTICLE_LIFETIME_MSEC = 3000;
 const float Constants::EXPLOSION_PARTICLE_SPEED = 5.0f / 1000.f; //random direction
 
-const unsigned int Constants::MOVESPARK_SPACING_MSEC = 10;
-const unsigned int Constants::MOVESPARK_LIFETIME_MSEC = 1000;
-const float Constants::MOVESPARK_SPEED = 0.6f / 1000.f; //down
-
 //  Gameplay affecting
 
-const float Constants::GRAVITY = 15.f;
-const float Constants::PLAYER_HALFHEIGHT = 0.9f; //let the player be 1.8m high
-const float Constants::PLAYER_HALFWIDTH = 0.3f; // and 60cm wide
+const float Constants::GRAVITY = 0.f;
+
+const float Constants::PLAYER_RADIUS = 0.5f;
+
 const float Constants::PLAYER_DAMPING = 0.0f;
 const float Constants::PLAYER_FRICTION = 0.1f;
 const float Constants::PLAYER_DENSITY = 5.f;
-const float Constants::PLAYER_MAX_VELOCITY = 15.0f; //fastest speed /through player input/
+
 const float Constants::PLAYER_MOVE_FORCE = 80.f;
-const float Constants::PLAYER_JUMP_FORCE = 30.f;
-const float Constants::PLAYER_JUMP_AIR_FORCE = 50.f;
 
 //  Input
 

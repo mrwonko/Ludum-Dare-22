@@ -30,9 +30,7 @@ class Player : public Object
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         b2Body* mBody;
         sf::Shape mRepresentative;
-        bool mJumpedThisFrame;
-        sf::Sound mJumpChannel;
-        float mNextMoveSparkTime; //time until next movespark is spawned
+        int mIndex; //which player? (default: -1 = invalid)
 };
 
 #endif // PLAYER_H

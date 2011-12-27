@@ -28,21 +28,14 @@ struct Constants
     static const unsigned int EXPLOSION_PARTICLE_LIFETIME_MSEC;
     static const float EXPLOSION_PARTICLE_SPEED;
 
-    static const unsigned int MOVESPARK_SPACING_MSEC; //each N msec a new movement spark is spawned (depends on player speed, too)
-    static const unsigned int MOVESPARK_LIFETIME_MSEC;
-    static const float MOVESPARK_SPEED;
-
     // directly gameplay influencing
     static const float GRAVITY;
-    static const float PLAYER_HALFHEIGHT; //let the player be 1.8m high
-    static const float PLAYER_HALFWIDTH; // and 60cm wide
+    static const float PLAYER_RADIUS;
+
     static const float PLAYER_DAMPING;
     static const float PLAYER_FRICTION;
     static const float PLAYER_DENSITY;
-    static const float PLAYER_MAX_VELOCITY;
     static const float PLAYER_MOVE_FORCE;
-    static const float PLAYER_JUMP_FORCE;
-    static const float PLAYER_JUMP_AIR_FORCE;
 
     // input
     static const sf::Keyboard::Key PHYSDEBUG_KEY;

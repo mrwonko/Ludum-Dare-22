@@ -2,14 +2,11 @@
 #include "Particle.h"
 #include "Constants.h"
 #include "Textures.h"
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_01.hpp>
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 extern Textures g_Textures;
 
-static boost::mt19937 s_rng;
 
 ParticleSystem::ParticleSystem()
 {
@@ -64,7 +61,6 @@ void ParticleSystem::Render(sf::RenderTarget& target, sf::Renderer& renderer) co
 void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
 {
     Particle pattern;
-    boost::uniform_01<boost::mt19937> FloatGenerator(s_rng);
     pattern.SetTexture(g_Textures.Explosion, true);
     pattern.SetScale(0.03f, 0.03f);
     pattern.SetBlendMode(sf::Blend::Add);
@@ -73,23 +69,9 @@ void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
     for(unsigned int i = 0; i < Constants::EXPLOSION_NUM_PARTICLES; ++i)
     {
         Particle* p = new Particle(pattern);
-        float movedir = FloatGenerator() * M_PI * 2.f;
+        float movedir = (float(i) / float(Constants::EXPLOSION_NUM_PARTICLES)) * M_PI * 2.f;
         p->Velocity = Constants::EXPLOSION_PARTICLE_SPEED * sf::Vector2f(cos(movedir), sin(movedir));
         p->SetRotation(movedir / M_PI * 180.f);
         mParticles.push_back(p);
     }
-}
-
-void ParticleSystem::CreateMoveSpark(const sf::Vector2f& pos, const float sizeMult)
-{
-    Particle* p = new Particle;
-    p->SetTexture(g_Textures.Spark, true);
-    float size = 0.02f * sizeMult;
-    p->SetScale(size, size);
-    p->SetOrigin(g_Textures.Spark.GetWidth()/2, g_Textures.Spark.GetHeight()/2);
-    p->SetBlendMode(sf::Blend::Add);
-    p->TotalLifetime_msec = p->RemainingLife_msec = Constants::MOVESPARK_LIFETIME_MSEC;
-    p->SetPosition(pos);
-    p->Velocity = Constants::MOVESPARK_SPEED * sf::Vector2f(0, 1);
-    mParticles.push_back(p);
 }

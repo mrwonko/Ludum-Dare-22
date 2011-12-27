@@ -8,11 +8,8 @@
 #include "EventListenerList.h"
 #include "EditAction_Click.h"
 #include "EditAction_NewStaticRect.h"
-#include "EditAction_NewLevelchange.h"
-#include "EditAction_NewKiller.h"
 #include "EditAction_Remove.h"
 #include "EditAction_MovePlayer.h"
-#include "EditAction_NewMovableRect.h"
 #include "Sounds.h"
 
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
@@ -375,9 +372,6 @@ void Level::SetupEditActions()
     mEditActions.push_back(new EditAction_Click(this));
     mEditActions.push_back(new EditAction_Remove(this));
     mEditActions.push_back(new EditAction_NewStaticRect(this));
-    mEditActions.push_back(new EditAction_NewMovableRect(this));
-    mEditActions.push_back(new EditAction_NewKiller(this));
-    mEditActions.push_back(new EditAction_NewLevelchange(this));
     mEditActions.push_back(new EditAction_MovePlayer(this));
 
     //set current one to first one

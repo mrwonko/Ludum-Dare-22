@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="LD22mrw" />
+		<Option title="MiniSynapse" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\LD22mrw_d" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\MiniSynapse_d" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin" />
 				<Option object_output="obj\Debug\" />
 				<Option type="1" />
@@ -18,7 +18,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\LD22mrw" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\MiniSynapse" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin" />
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
@@ -39,6 +39,7 @@
 			<Add library="sfml-graphics" />
 			<Add library="sfml-window" />
 			<Add library="sfml-audio" />
+			<Add library="sfml-network" />
 			<Add library="sfml-system" />
 			<Add library="box2d" />
 			<Add library="opengl32" />
@@ -50,12 +51,6 @@
 		<Unit filename="EditAction_Click.h" />
 		<Unit filename="EditAction_MovePlayer.cpp" />
 		<Unit filename="EditAction_MovePlayer.h" />
-		<Unit filename="EditAction_NewKiller.cpp" />
-		<Unit filename="EditAction_NewKiller.h" />
-		<Unit filename="EditAction_NewLevelchange.cpp" />
-		<Unit filename="EditAction_NewLevelchange.h" />
-		<Unit filename="EditAction_NewMovableRect.cpp" />
-		<Unit filename="EditAction_NewMovableRect.h" />
 		<Unit filename="EditAction_NewStaticRect.cpp" />
 		<Unit filename="EditAction_NewStaticRect.h" />
 		<Unit filename="EditAction_Remove.cpp" />
@@ -68,8 +63,6 @@
 		<Unit filename="Helpers.h" />
 		<Unit filename="Level.cpp" />
 		<Unit filename="Level.h" />
-		<Unit filename="MovableRect.cpp" />
-		<Unit filename="MovableRect.h" />
 		<Unit filename="Object.cpp" />
 		<Unit filename="Object.h" />
 		<Unit filename="Particle.h" />
@@ -81,12 +74,6 @@
 		<Unit filename="StaticRect.cpp" />
 		<Unit filename="StaticRect.h" />
 		<Unit filename="Textures.h" />
-		<Unit filename="Trigger.cpp" />
-		<Unit filename="Trigger.h" />
-		<Unit filename="TriggerKill.cpp" />
-		<Unit filename="TriggerKill.h" />
-		<Unit filename="TriggerLevelchange.cpp" />
-		<Unit filename="TriggerLevelchange.h" />
 		<Unit filename="UI.cpp" />
 		<Unit filename="UI.h" />
 		<Unit filename="UIElement.cpp" />
