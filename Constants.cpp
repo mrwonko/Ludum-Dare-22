@@ -1,6 +1,6 @@
 #include "Constants.h"
 
-const std::string Constants::LEVEL_BASE_NAME = "data/levels/lvl";
+const std::string Constants::LEVEL_BASE_NAME = "data/levels/";
 const std::string Constants::LEVEL_EXTENSION = ".txt";
 const std::string Constants::FONTPATH = "data/fonts/chary___.ttf";
 
@@ -45,3 +45,5 @@ const sf::Keyboard::Key Constants::MOVEU_KEY = sf::Keyboard::W;
 const sf::Keyboard::Key Constants::MOVED_KEY = sf::Keyboard::S;
 const sf::Keyboard::Key Constants::JUMP_KEY = sf::Keyboard::Space;
 const sf::Keyboard::Key Constants::RELOAD_KEY = sf::Keyboard::R;
+
+const unsigned short Constants::PORT = 1234;

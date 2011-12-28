@@ -7,6 +7,8 @@
 
 struct Constants
 {
+    static const unsigned short PORT;
+
     static const std::string LEVEL_BASE_NAME;
     static const std::string LEVEL_EXTENSION;
 

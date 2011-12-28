@@ -6,6 +6,10 @@
 #include <SFML/Graphics.hpp>
 
 class Level;
+namespace sf
+{
+    class Packet;
+}
 
 /** Pretty much everything is an object. That way I can store pointers to it in box2D userdata. Can be casted accordingly using GetType().
 
@@ -23,11 +27,13 @@ class Object : public sf::Drawable
             \param out_stream Stream to write into
         **/
         virtual const bool Serialize(std::ostream& out_stream) const = 0;
+        virtual const bool Serialize(sf::Packet& out_packet) const = 0;
 
         /** \return success
             \param stream Stream to read from
         **/
         virtual const bool Deserialize(std::istream& stream) = 0;
+        virtual const bool Deserialize(sf::Packet& packet) = 0;
 
         /** Returns the object's type (for serialization)
         **/

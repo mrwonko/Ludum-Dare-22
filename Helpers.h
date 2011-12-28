@@ -14,9 +14,7 @@ namespace sf
 // height defined in constants.h, width calculated based on aspect
 void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center);
 
-unsigned int GetLevelCount();
-
-const std::string GetLevelName(unsigned int index);
+std::string AskForMapName();
 
 // uses g_Window - yep, I start quick & dirty hacking.
 sf::Vector2f ScreenToWorldSpace(const sf::Vector2f& screenSpaceCoord);

@@ -12,8 +12,9 @@ class EditAction_MovePlayer : public EditAction
 
         virtual const bool ProcessEvent(const sf::Event& event);
         virtual std::string GetName() const { return "Move Player"; }
-    protected:
+
     private:
+        unsigned int mPlayerIndex;
 };
 
 #endif // EDITACTION_MOVEPLAYER_H

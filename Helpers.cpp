@@ -14,27 +14,6 @@ void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center)
     window.SetView(view);
 }
 
-unsigned int GetLevelCount()
-{
-    unsigned int count = 0;
-    while(true)
-    {
-        std::ifstream file(GetLevelName(count).c_str());
-        if(file.fail())
-        {
-            return count;
-        }
-        ++count;
-    }
-}
-
-const std::string GetLevelName(unsigned int index)
-{
-    std::stringstream levelname;
-    levelname << Constants::LEVEL_BASE_NAME << index << Constants::LEVEL_EXTENSION;
-    return levelname.str();
-}
-
 namespace
 {
     struct AABBQueryCallback : public b2QueryCallback
@@ -97,4 +76,12 @@ sf::Vector2f ProcessEditMousePos(const sf::Vector2f& pos)
         mousePos.y = roundf(mousePos.y);
     }
     return mousePos;
+}
+
+std::string AskForMapName()
+{
+    std::cout<<"map name: " << std::flush;
+    std::string mapname;
+    std::cin >> mapname;
+    return Constants::LEVEL_BASE_NAME + mapname + Constants::LEVEL_EXTENSION;
 }

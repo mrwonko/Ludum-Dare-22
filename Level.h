@@ -2,6 +2,8 @@
 #define LEVEL_H
 
 #include <iostream>
+#include <vector>
+#include <string>
 #include <list>
 #include "Player.h"
 #include "Constants.h"
@@ -14,6 +16,10 @@
 
 class EditAction;
 class Object;
+namespace sf
+{
+    class Packet;
+}
 
 /** This turned into way more than just the level, it's a kind of general game class **/
 class Level : public sf::Drawable, public EventListener
@@ -29,7 +35,7 @@ class Level : public sf::Drawable, public EventListener
     };
 
     public:
-        Level(const unsigned int index);
+        Level(const bool editMode = false);
         virtual ~Level();
 
         /** \brief Loads the level (index set in constructor)
@@ -41,13 +47,6 @@ class Level : public sf::Drawable, public EventListener
             \return success
         **/
         const bool Save();
-
-        const bool IsComplete() const { return mStatus == eWon; }
-        const bool IsLost() const { return mStatus == eLost; }
-
-        void Win() { mStatus = eWon; }
-
-        void Lose();
 
         void Update(unsigned int deltaT_msec);
 
@@ -66,10 +65,22 @@ class Level : public sf::Drawable, public EventListener
 
         ParticleSystem& GetParticleSystem() { return mParticleSystem; }
 
-        void SetPlayerPosition(const sf::Vector2f& pos) { mPlayer.SetPosition(pos); }
+        Player* GetPlayer(const unsigned int index) { if(index < mPlayers.size()) return mPlayers[index]; else return NULL; }
+
+        void SetFilename(const std::string& filename) { mFilename = filename; }
+
+        const unsigned int GetNumPlayers() const;
+
+        const bool SetNumPlayers(const unsigned int count); //deletes unnecessary players (but cannot create new ones!)
+
+        const bool Serialize(sf::Packet& out_packet) const;
+        const bool Deserialize(sf::Packet& packet);
+
+        void SetIndex(const int index) { mIndex = index; }
 
     private:
         void DeleteObjects();
+        void DeletePlayers();
 
         /** \return success
             \param out_stream Stream to write into
@@ -92,9 +103,9 @@ class Level : public sf::Drawable, public EventListener
         bool mDebugPhysics; ///< Show physics debug drawing? (toggle with P)
         sfmlBox2DDebugDraw mDebugDraw; ///< Physics debug drawing
         b2World mWorld; ///< Physical World
-        const unsigned int mIndex; ///< Which level is this?
+        std::string mFilename; ///< Which level is this?
         bool mEditMode; ///< Whether we're currently in the level editing mode
-        Player mPlayer; ///< The Player (after world since it creates Box2D Objects
+        std::vector<Player*> mPlayers; ///< The Players
         sf::Text mEditText;
         UI mEditUI;
         UI mGameUI; ///< \note I shouldn't create a new one for each level... But this is Ludum Dare, screw good design XD (I don't actually have any ingame UI)
@@ -106,6 +117,8 @@ class Level : public sf::Drawable, public EventListener
         Status mStatus;
         ParticleSystem mParticleSystem;
         sf::Sound mChannel1;
+
+        int mIndex;
 };
 
 #endif // LEVEL_H

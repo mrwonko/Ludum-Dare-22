@@ -3,6 +3,7 @@
 #include "Level.h"
 #include <Box2D/Box2D.h>
 #include <algorithm>
+#include <SFML/Network/Packet.hpp>
 //#include "EventListenerList.h"
 
 //extern EventListenerList g_EventListeners;
@@ -61,6 +62,28 @@ const bool StaticRect::Deserialize(std::istream& stream)
     stream >> temp;
     mColor.a = temp;
     if(stream.fail())
+    {
+        std::cerr << "Invalid StaticRect format!" << std::endl;
+        return false;
+    }
+    UpdateShape();
+    return true;
+}
+
+const bool StaticRect::Serialize(sf::Packet& out_packet) const
+{
+    out_packet << mCorner1.x;
+    out_packet << mCorner1.y;
+    out_packet << mCorner2.x << mCorner2.y;
+    out_packet << mColor.r << mColor.g << mColor.b << mColor.a;
+    return true;
+}
+
+const bool StaticRect::Deserialize(sf::Packet& packet)
+{
+    packet >> mCorner1.x >> mCorner1.y >> mCorner2.x >> mCorner2.y;
+    packet >> mColor.r >> mColor.g >> mColor.b >> mColor.a;
+    if(!packet)
     {
         std::cerr << "Invalid StaticRect format!" << std::endl;
         return false;

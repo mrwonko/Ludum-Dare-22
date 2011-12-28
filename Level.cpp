@@ -11,19 +11,19 @@
 #include "EditAction_Remove.h"
 #include "EditAction_MovePlayer.h"
 #include "Sounds.h"
+#include <SFML/Network/Packet.hpp>
 
 static const b2Vec2 gravity(0.f, Constants::GRAVITY);
 extern EventListenerList g_EventListeners;
 extern sf::RenderWindow* g_Window;
 extern Sounds g_Sounds;
 
-Level::Level(const unsigned int index) :
+Level::Level(const bool editMode) :
     mDebugPhysics(false),
     mWorld(gravity),
-    mIndex(index),
-    mEditMode(false),
-    mPlayer(this), //after world! (.h counts)
-    mStatus(Level::ePlaying)
+    mEditMode(editMode),
+    mStatus(Level::ePlaying),
+    mIndex(-1)
 {
     mWorld.SetAllowSleeping(true);
     mDebugDraw.SetWorld(&mWorld);
@@ -35,6 +35,7 @@ Level::Level(const unsigned int index) :
 Level::~Level()
 {
     DeleteObjects();
+    DeletePlayers();
     for(EditActionList::iterator it = mEditActions.begin(); it != mEditActions.end(); ++it)
     {
         delete *it;
@@ -52,13 +53,28 @@ void Level::DeleteObjects()
     mObjects.clear();
 }
 
+void Level::DeletePlayers()
+{
+    //clear objects
+    for(std::vector<Player*>::iterator it = mPlayers.begin(); it != mPlayers.end(); ++it)
+    {
+        delete *it;
+    }
+    mPlayers.clear();
+}
+
 const bool Level::Serialize(std::ostream& out_stream) const
 {
-    //serialize player
-    if(!mPlayer.Serialize(out_stream))
+    //serialize players
+    out_stream << mPlayers.size() << "\n";
+    for(std::vector<Player*>::const_iterator it = mPlayers.begin(); it != mPlayers.end(); ++it)
     {
-        std::cerr << "Could not serialize player!" << std::endl;
-        return false;
+        Player& player = **it;
+        if(!player.Serialize(out_stream))
+        {
+            std::cerr << "Could not serialize a player!" << std::endl;
+            return false;
+        }
     }
 
     //serialize other objects
@@ -73,13 +89,52 @@ const bool Level::Serialize(std::ostream& out_stream) const
     return true; // successfully finished
 }
 
+const bool Level::Serialize(sf::Packet& out_packet) const
+{
+    //serialize players
+    out_packet << mPlayers.size();
+    for(std::vector<Player*>::const_iterator it = mPlayers.begin(); it != mPlayers.end(); ++it)
+    {
+        Player& player = **it;
+        if(!player.Serialize(out_packet))
+        {
+            std::cerr << "Could not serialize a player!" << std::endl;
+            return false;
+        }
+    }
+
+    //serialize other objects
+    out_packet << mObjects.size();
+    for(std::list<Object*>::const_iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+    {
+        const Object& obj = **it;
+        out_packet << obj.GetType();
+        obj.Serialize(out_packet);
+    }
+    return true; // successfully finished
+}
+
 const bool Level::Deserialize(std::istream& stream)
 {
-    //deserialize player
-    if(!mPlayer.Deserialize(stream))
+    //deserialize players
+    unsigned int numPlayers;
+    stream >> numPlayers;
+    if(stream.fail())
     {
-        std::cerr << "Could not deserialize player!" << std::endl;
+        std::cerr<<"Could not read player count!" << std::endl;
         return false;
+    }
+    for(unsigned int i = 0 ;  i < numPlayers  ; ++i)
+    {
+        Player* player = new Player(this);
+        player->SetIndex(i);
+        if(!player->Deserialize(stream))
+        {
+            std::cerr << "Could not deserialize player " << i+1 << "!" << std::endl;
+            delete player;
+            return false;
+        }
+        mPlayers.push_back(player);
     }
 
     //deserialize other objects
@@ -116,6 +171,64 @@ const bool Level::Deserialize(std::istream& stream)
     return true; // successfully finished
 }
 
+const bool Level::Deserialize(sf::Packet& packet)
+{
+    //deserialize players
+    unsigned int numPlayers;
+    packet >> numPlayers;
+    if(!packet)
+    {
+        std::cerr<<"Could not read player count!" << std::endl;
+        return false;
+    }
+    for(unsigned int i = 0 ;  i < numPlayers  ; ++i)
+    {
+        Player* player = new Player(this);
+        player->SetIndex(i);
+        if(!player->Deserialize(packet))
+        {
+            std::cerr << "Could not deserialize player " << i+1 << "!" << std::endl;
+            delete player;
+            return false;
+        }
+        mPlayers.push_back(player);
+    }
+
+    //deserialize other objects
+    std::list<Object*>::size_type numObjects = 0;
+    packet >> numObjects;
+    if(!packet)
+    {
+        std::cerr << "Could not read object count!" << std::endl;
+        return false;
+    }
+    for(std::list<Object*>::size_type i = 0; i < numObjects; ++i)
+    {
+        std::string type;
+        packet >> type;
+        if(!packet)
+        {
+            std::cerr << "Could not read object " << i << "'s type!" << std::endl;
+            return false;
+        }
+        Object* newObject = Object::Create(type, this);
+        if(newObject == NULL)
+        {
+            std::cerr << "Invalid object type in level file" << std::endl;
+            //cleanup done in destructor
+            return false;
+        }
+        if(!newObject->Deserialize(packet))
+        {
+            std::cerr << "Could not deserialize object " << i << std::endl;
+            delete newObject;
+            return false;
+        }
+        mObjects.push_back(newObject);
+    }
+    return true; // successfully finished
+}
+
 void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     // Draw Elements
@@ -124,8 +237,11 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
         target.Draw(**it);
     }
 
-    // Draw Player
-    target.Draw(mPlayer);
+    // Draw Players
+    for(std::vector<Player*>::const_iterator it = mPlayers.begin(); it != mPlayers.end(); ++it)
+    {
+        target.Draw(**it);
+    }
 
     // Draw Particles
     target.Draw(mParticleSystem);
@@ -203,9 +319,12 @@ const bool Level::ProcessEvent(const sf::Event& event)
         if(mStatus == ePlaying) //cannot move player when dead
         {
             //gameplay events - disabled in edit mode
-            if(mPlayer.ProcessEvent(event))
+            if(mIndex != -1)
             {
-                return true;
+                if(mPlayers[mIndex]->ProcessEvent(event))
+                {
+                    return true;
+                }
             }
         }
     }
@@ -220,44 +339,21 @@ const bool Level::ProcessEvent(const sf::Event& event)
             return true;
         }
         //#endif
-        //Editmode Toggle
-        if(event.Key.Code == Constants::LEVELEDIT_KEY)
-        {
-            mEditMode = !mEditMode;
-            if(mEditMode)
-            {
-                mEditCameraPosition = mPlayer.GetPosition();
-            }
-            else
-            {
-                SetViewPos(*g_Window, mPlayer.GetPosition());
-            }
-            return true;
-        }
-        if(event.Key.Code == Constants::RELOAD_KEY)
-        {
-            mStatus = ePlaying;
-            DeleteObjects();
-            mPlayer.SetPosition(sf::Vector2f(0.f, 0.f)); //in case loading fails due to unsafed map
-            Load();
-            mParticleSystem.Clear();
-            return true;
-        }
     }
     return false;
 }
 
 const bool Level::Load()
 {
-    std::ifstream file(GetLevelName(mIndex).c_str());
+    std::ifstream file(mFilename.c_str());
     if(file.fail())
     {
-        std::cerr << "Could not open \"" << GetLevelName(mIndex) << "\"!" << std::endl;
+        std::cerr << "Could not open \"" << mFilename << "\"!" << std::endl;
         return false;
     }
     if(!Deserialize(file))
     {
-        std::cerr << "Error deserializing from \"" << GetLevelName(mIndex) << "\"!" << std::endl;
+        std::cerr << "Error deserializing from \"" << mFilename << "\"!" << std::endl;
         return false;
     }
     mChannel1.SetBuffer(g_Sounds.Start);
@@ -270,20 +366,20 @@ const bool Level::Save()
     std::stringstream temp_stream;
     if(!Serialize(temp_stream))
     {
-        std::cerr << "Error serializing to \"" << GetLevelName(mIndex) << "\"!" << std::endl;
+        std::cerr << "Error serializing to \"" << mFilename << "\"!" << std::endl;
         return false;
     }
     // don't overwrite file until serialization was successful :)
-    std::ofstream file(GetLevelName(mIndex).c_str(), std::ios_base::out | std::ios_base::trunc);
+    std::ofstream file(mFilename.c_str(), std::ios_base::out | std::ios_base::trunc);
     if(file.fail())
     {
-        std::cerr << "Could not open \"" << GetLevelName(mIndex) << "\"!" << std::endl;
+        std::cerr << "Could not open \"" << mFilename << "\"!" << std::endl;
         return false;
     }
     file << temp_stream.rdbuf();
     if(file.fail())
     {
-        std::cerr << "Could not write to \"" << GetLevelName(mIndex) << "\"! Sorry, the file is now lost. (Hope you had a backup if you were overwriting.)" << std::endl;
+        std::cerr << "Could not write to \"" << mFilename << "\"! Sorry, the file is now lost. (Hope you had a backup if you were overwriting.)" << std::endl;
         return false;
     }
     return true;
@@ -323,8 +419,7 @@ void Level::Update(unsigned int deltaT_msec)
         }
         if(mStatus == ePlaying)
         {
-            // Update Player
-            mPlayer.Update(deltaT_msec);
+            // Update Players //TODO
         }
         // Update particles
         mParticleSystem.Update(deltaT_msec);
@@ -354,9 +449,9 @@ void Level::SetupUIs()
 
     UIText* levelText = new UIText;
     std::stringstream ss;
-    ss << "Level " << mIndex;
+    ss << "Filename: " << mFilename;
     levelText->SetText(ss.str());
-    levelText->SetCoordinates(sf::Vector2f(-100.f, 0.f));
+    levelText->SetCoordinates(sf::Vector2f(0.f, 50.f));
     mEditUI.AddElement("level", levelText);
 
     //  Game Over UI
@@ -403,11 +498,23 @@ void Level::RemoveObject(Object* obj)
     }
 }
 
-void Level::Lose()
+const unsigned int Level::GetNumPlayers() const
 {
-    mParticleSystem.CreateExplosion(mPlayer.GetPosition());
-    mStatus = eLost;
-    mChannel1.SetBuffer(g_Sounds.Death);
-    mChannel1.Play();
-    mPlayer.Stop(); // or the physical body would move further, potentially dying again or even winning.
+    return mPlayers.size(); //TODO: numplayers
+}
+
+const bool Level::SetNumPlayers(const unsigned int count)
+{
+    if(count > GetNumPlayers())
+    {
+        std::cerr<<"Cannot create additional players in level!"<<std::endl;
+        return false;
+    }
+    std::vector<Player*>::iterator it = mPlayers.begin();
+    it = it + (mPlayers.size() - count + 1); //start deleting at next one
+    while(it != mPlayers.end())
+    {
+        mPlayers.erase(it++);
+    }
+    return true;
 }

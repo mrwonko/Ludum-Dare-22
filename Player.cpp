@@ -2,16 +2,22 @@
 #include "Level.h"
 #include "Helpers.h"
 #include <Box2D/Box2D.h>
+#include <sstream>
 #include "Sounds.h"
+#include <SFML/Network/Packet.hpp>
+#include <SFML/Graphics.hpp>
 
 extern Sounds g_Sounds;
-extern sf::RenderWindow* g_Window;
+extern sf::Font g_Font;
 
 Player::Player(Level* const level):
     Object(level),
     mRepresentative(sf::Shape::Circle(0, 0, Constants::PLAYER_RADIUS, Constants::PLAYER_COLOR)),
-    mIndex(-1)
+    mIndex(-1),
+    mDead(false)
 {
+    mIndexText.SetFont(g_Font);
+    UpdateIndex();
     //ctor
     b2World& world = mLevel->GetWorld();
 
@@ -39,9 +45,10 @@ Player::~Player()
 
 void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
-    if(!mLevel->IsLost()) //Player explodes on death and is no longer rendered!
+    if(!mDead) //Player explodes on death and is no longer rendered!
     {
         target.Draw(mRepresentative);
+        target.Draw(mIndexText);
     }
 }
 
@@ -50,6 +57,7 @@ const bool Player::Serialize(std::ostream& out_stream) const
     out_stream << GetPosition().x << " " << GetPosition().y << " " << mIndex << std::endl;
     return !out_stream.fail();
 }
+
 const bool Player::Deserialize(std::istream& stream)
 {
     sf::Vector2f pos;
@@ -62,11 +70,41 @@ const bool Player::Deserialize(std::istream& stream)
     SetPosition(pos);
 
     stream >> mIndex;
+    UpdateIndex();
     if(stream.fail())
     {
         std::cerr << "Could not read player index!" << std::endl;
         return false;
     }
+
+    return true;
+}
+
+const bool Player::Serialize(sf::Packet& out_packet) const
+{
+    out_packet << GetPosition().x << GetPosition().y << mIndex;
+    return bool(out_packet);
+}
+
+const bool Player::Deserialize(sf::Packet& packet)
+{
+    sf::Vector2f pos;
+    packet >> pos.x >> pos.y;
+    if(!packet)
+    {
+        std::cerr << "Could not read player position!" << std::endl;
+        return false;
+    }
+    SetPosition(pos);
+
+    int index;
+    packet >> index;
+    if(!packet)
+    {
+        std::cerr << "Could not read player index!" << std::endl;
+        return false;
+    }
+    assert(index == mIndex && "Player deserialized from wrong index!");
 
     return true;
 }
@@ -104,7 +142,6 @@ void Player::Update(unsigned int deltaT_msec)
     {
         const b2Vec2& pos = mBody->GetPosition();
         sf::Drawable::SetPosition(pos.x, pos.y);
-        SetViewPos(*g_Window, sf::Vector2f(pos.x, pos.y));
     }
     // move towards next waypoint
 }
@@ -120,4 +157,18 @@ void Player::Stop()
 {
     mBody->SetLinearVelocity(b2Vec2(0, 0));
     mBody->SetAwake(false);
+}
+
+void Player::Kill()
+{
+    mLevel->GetParticleSystem().CreateExplosion(GetPosition());
+}
+
+void Player::UpdateIndex()
+{
+    std::stringstream ss;
+    ss << mIndex;
+    mIndexText.SetString(ss.str());
+    sf::FloatRect fr = mIndexText.GetRect();
+    mIndexText.SetPosition(-fr.Width/2, -fr.Height/2);
 }

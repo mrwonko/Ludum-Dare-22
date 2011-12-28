@@ -17,7 +17,9 @@ class StaticRect : public Object //, public EventListener //event listener: may 
         virtual const std::string GetType() const { return "StaticRect"; }
 
         virtual const bool Serialize(std::ostream& out_stream) const;
+        virtual const bool Serialize(sf::Packet& out_packet) const;
         virtual const bool Deserialize(std::istream& stream);
+        virtual const bool Deserialize(sf::Packet& packet);
 
         void SetCorner1(const sf::Vector2f& pos);
         void SetCorner2(const sf::Vector2f& pos);
