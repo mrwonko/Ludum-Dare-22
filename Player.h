@@ -23,6 +23,9 @@ class Player : public Object
         virtual const bool Deserialize(sf::Packet& packet);
         virtual const bool Deserialize(std::istream& stream);
 
+        const bool SerializeOrders(sf::Packet& out_packet) const;
+        const bool DeserializeOrders(sf::Packet& packet);
+
         /** \return Whether the event was used **/
         const bool ProcessEvent(const sf::Event& event);
 

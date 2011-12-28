@@ -34,10 +34,12 @@ namespace
         eIndex, //server telling client his index
         eFull, //server telling client he's full
         eWelcome, //server telling client: welcome!
-        eStart,
+        eStart, //server: game starts
+        eOutcome, //server: show outcome
+        eReady, //player is ready
     };
 
-    typedef std::vector<sf::TcpSocket*> SocketVector;
+    typedef std::list<sf::TcpSocket*> SocketVector;
 
     void SendPacket(SocketVector& targets, sf::Packet& packet)
     {
@@ -238,6 +240,8 @@ int main()
                     SendPacket(clientSockets, packet);
                 }
 
+                assert(numClients == clientSockets.size());
+
                 level.SetNumPlayers(numClients);
 
                 std::cout<<"Sending level to clients"<<std::endl;
@@ -250,6 +254,80 @@ int main()
                         continue;
                     }
                     SendPacket(clientSockets, packet);
+                }
+
+                unsigned int numReadyClients = 0;
+
+                bool forceQuit = false;
+
+                while(!level.IsOver() && !forceQuit)
+                {
+                    for(SocketVector::iterator it = clientSockets.begin(); it != clientSockets.end(); ++it)
+                    {
+                        sf::TcpSocket* socket = *it;
+                        socket->SetBlocking(false);
+                        sf::Packet packet;
+                        //got any packets?
+                        if(socket->Receive(packet) == sf::Socket::Done)
+                        {
+                            sf::Uint32 msg;
+                            packet >> msg;
+                            if(!packet)
+                            {
+                                std::cout<<"Error: invalid packet received!"<<std::endl;
+                                //let's not quit, prevents abuse - wtf, I'm talking about a lan party here!
+                            }
+                            else
+                            {
+                                if(msg == eDisconnect) //cannot handle if he's ready or not, would thus lead to bugs/exploits -> screw it, just quit.
+                                {
+                                    unsigned int index;
+                                    packet >> index;
+                                    std::cout<<"Client "<<index<<" disconnected, shutting down (this would be too hard to handle)"<<std::endl;
+                                    forceQuit = true;
+                                    break;
+                                }
+                                else if(msg == ePlayer)
+                                {
+                                    unsigned int index;
+                                    packet >> index;
+                                    Player* player = level.GetPlayer(index);
+                                    if(player != NULL)
+                                    {
+                                        assert(player->DeserializeOrders(packet));
+                                    }
+                                }
+                                else if(msg == eReady)
+                                {
+                                    ++numReadyClients;
+                                    if(numReadyClients == clientSockets.size()) //all players ready?
+                                    {
+                                        numReadyClients = 0;
+                                        for(int i = 0; i < level.GetNumPlayers(); ++i)
+                                        {
+                                            Player* player = level.GetPlayer(i);
+                                            assert(player != NULL);
+                                            assert(player->GetIndex() == i);
+                                            sf::Packet orderPacket;
+                                            orderPacket << ePlayer << i;
+                                            assert(player->SerializeOrders(orderPacket));
+                                            SendPacket(clientSockets, orderPacket);
+                                        }
+
+                                        sf::Packet gogogo;
+                                        gogogo << eOutcome;
+                                        SendPacket(clientSockets, gogogo);
+                                        level.CalculateOutcome();
+                                    }
+                                }
+                                else
+                                {
+                                    std::cout<<"Received invalid message " << msg << std::endl;
+                                }
+                            }
+                        }
+                    }
+                    sf::Sleep(50);
                 }
 
 
@@ -390,13 +468,169 @@ int main()
                 continue;
             }
             std::cout<<"Received level. Ready to rumble."<<std::endl;
+
+            sf::RenderWindow wnd(sf::VideoMode(800, 600), "Mini Synapse - Editor");
+            g_Window = &wnd;
+
+            sf::Text serverDeadText;
+            serverDeadText.SetFont(g_Font);
+            serverDeadText.SetString("Server is down.");
+            serverDeadText.SetScale(0.05f, 0.05f);
+            serverDeadText.SetColor(sf::Color::Red);
+
+            bool serverDead = false;
+
+            while(wnd.IsOpened())
+            {
+                sf::Event ev;
+                while(wnd.PollEvent(ev))
+                {
+                    if(ev.Type == sf::Event::Closed)
+                    {
+                        wnd.Close();
+                        sf::Packet quitPacket;
+                        packet << eDisconnect;
+                        packet << playerIndex;
+                        socket.SetBlocking(true);
+                        socket.Send(packet);
+                        break;
+                    }
+                    else if(ev.Type == sf::Event::Resized)
+                    {
+                        //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
+                        SetViewPos(wnd, wnd.GetView().GetCenter());
+                    }
+                    else
+                    {
+                        level.ProcessEvent(ev);
+                    }
+                }
+                socket.SetBlocking(false);
+                if(!serverDead && socket.Receive(packet) == sf::Socket::Done)
+                {
+                    packet >> msg;
+                    if(!packet)
+                    {
+                        std::cerr<<"Error: invalid packet received!"<<std::endl;
+                        wnd.Close();
+                        break;
+                    }
+                    else
+                    {
+                        if(msg == eShutdown)
+                        {
+                            std::cout<<"Server shutting down." <<std::endl;
+                            serverDead = true; //stay open so players can look at outcome - HACK!
+                            //wnd.Close();
+                            //break;
+                        }
+                        else if(msg == ePlayer)
+                        {
+                            int index;
+                            packet >> index;
+                            if(!packet)
+                            {
+                                std::cout<<"Error: invalid packet received!"<<std::endl;
+                                wnd.Close();
+                                break;
+                            }
+                            Player* player = level.GetPlayer(index);
+                            assert(player != NULL);
+                            if(!player->DeserializeOrders(packet))
+                            {
+                                std::cout<<"Error: invalid packet received!"<<std::endl;
+                                wnd.Close();
+                                break;
+                            }
+
+                        }
+                        else if(msg == eOutcome)
+                        {
+                            level.ShowOutcome();
+                        }
+                        else if(msg == eDisconnect)
+                        {
+                            int index;
+                            packet >> index;
+                            assert(bool(packet));
+                            Player* player = level.GetPlayer(index);
+                            if(player != NULL)
+                            {
+                                player->Kill();
+                            }
+                        }
+                    }
+                }
+                if(!serverDead && level.Ready)
+                {
+                    level.Ready = false;
+
+                    sf::Packet playerPacket;
+                    playerPacket << ePlayer;
+                    playerPacket << playerIndex;
+                    Player* player = level.GetPlayer(playerIndex);
+                    assert(player != NULL);
+                    assert(player->SerializeOrders(playerPacket));
+                    socket.SetBlocking(true);
+                    socket.Send(playerPacket);
+
+                    sf::Packet readyPacket;
+                    readyPacket << eReady;
+                    socket.Send(readyPacket);
+                }
+
+                level.Update(wnd.GetFrameTime());
+
+                wnd.Clear();
+                wnd.Draw(level);
+                if(serverDead)
+                {
+                    wnd.Draw(serverDeadText);
+                }
+                wnd.Display();
+            }
+
+            g_Window = NULL;
         }
         //editor
         else if(choice == 3)
         {
-            Level level;
+            Level level(true);
             level.SetFilename(AskForMapName());
             level.Load(); //try loading, accept failure (= new map)
+
+            sf::RenderWindow wnd(sf::VideoMode(800, 600), "Mini Synapse - Editor");
+            g_Window = &wnd;
+
+            while(wnd.IsOpened())
+            {
+                sf::Event ev;
+                while(wnd.PollEvent(ev))
+                {
+                    if(ev.Type == sf::Event::Closed)
+                    {
+                        wnd.Close();
+                        break;
+                    }
+                    else if(ev.Type == sf::Event::Resized)
+                    {
+                        //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
+                        SetViewPos(wnd, wnd.GetView().GetCenter());
+                    }
+                    else
+                    {
+                        level.ProcessEvent(ev);
+                    }
+                }
+
+                level.Update(wnd.GetFrameTime());
+
+                wnd.Clear();
+                wnd.Draw(level);
+                wnd.Display();
+            }
+
+            g_Window = NULL;
 
             std::cout<<"TODO: Level editor (vital!)"<<std::endl;
         }

@@ -45,7 +45,7 @@ const bool EditAction_MovePlayer::ProcessEvent(const sf::Event& event)
             mPlayerIndex = 0;
             for(unsigned int i = 1; i < mLevel->GetNumPlayers(); ++i)
             {
-                Player* player = mLevel->GetPlayer(0);
+                Player* player = mLevel->GetPlayer(i);
                 assert(player != NULL); //GetNumPlayers() should return the right result
                 sf::Vector2f dif = (mousePos - player->GetPosition());
                 float dist = dif.x * dif.x + dif.y * dif.y;

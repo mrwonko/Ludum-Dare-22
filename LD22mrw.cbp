@@ -51,6 +51,8 @@
 		<Unit filename="EditAction_Click.h" />
 		<Unit filename="EditAction_MovePlayer.cpp" />
 		<Unit filename="EditAction_MovePlayer.h" />
+		<Unit filename="EditAction_NewPlayer.cpp" />
+		<Unit filename="EditAction_NewPlayer.h" />
 		<Unit filename="EditAction_NewStaticRect.cpp" />
 		<Unit filename="EditAction_NewStaticRect.h" />
 		<Unit filename="EditAction_Remove.cpp" />

@@ -17,6 +17,7 @@ Player::Player(Level* const level):
     mDead(false)
 {
     mIndexText.SetFont(g_Font);
+    mIndexText.SetScale(0.05f, 0.05f);
     UpdateIndex();
     //ctor
     b2World& world = mLevel->GetWorld();
@@ -49,6 +50,11 @@ void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     {
         target.Draw(mRepresentative);
         target.Draw(mIndexText);
+
+        if(mIndex != -1 && mIndex == mLevel->GetIndex())
+        {
+            //draw orders
+        }
     }
 }
 
@@ -167,8 +173,22 @@ void Player::Kill()
 void Player::UpdateIndex()
 {
     std::stringstream ss;
-    ss << mIndex;
+    ss << mIndex + 1;
     mIndexText.SetString(ss.str());
     sf::FloatRect fr = mIndexText.GetRect();
     mIndexText.SetPosition(-fr.Width/2, -fr.Height/2);
+    if(mIndex != -1 && mIndex == mLevel->GetIndex())
+    {
+        mIndexText.SetColor(sf::Color::Green);
+    }
+}
+
+const bool Player::SerializeOrders(sf::Packet& out_packet) const
+{
+    return true;
+}
+
+const bool Player::DeserializeOrders(sf::Packet& packet)
+{
+    return true;
 }

@@ -29,9 +29,9 @@ class Level : public sf::Drawable, public EventListener
 
     enum Status
     {
-        ePlaying,
-        eWon,
-        eLost
+        ePlanning,
+        eOutcome,
+        eWaiting, //done planning, awaiting outcome
     };
 
     public:
@@ -65,18 +65,31 @@ class Level : public sf::Drawable, public EventListener
 
         ParticleSystem& GetParticleSystem() { return mParticleSystem; }
 
-        Player* GetPlayer(const unsigned int index) { if(index < mPlayers.size()) return mPlayers[index]; else return NULL; }
+        Player* GetPlayer(const unsigned int index) { if(index < mPlayers.size()){ return mPlayers[index]; } else {return NULL; } }
 
         void SetFilename(const std::string& filename) { mFilename = filename; }
 
         const unsigned int GetNumPlayers() const;
 
-        const bool SetNumPlayers(const unsigned int count); //deletes unnecessary players (but cannot create new ones!)
+        const bool SetNumPlayers(const unsigned int count); ///< deletes unnecessary players (but cannot create new ones!)
+
+        void RemovePlayer(const unsigned int index);
+
+        void AddPlayer(Player* player);
 
         const bool Serialize(sf::Packet& out_packet) const;
         const bool Deserialize(sf::Packet& packet);
 
         void SetIndex(const int index) { mIndex = index; }
+        const int GetIndex() const { return mIndex; }
+
+        void ShowOutcome();
+
+        bool Ready;
+
+        void CalculateOutcome(); //for server - all in one
+
+        const bool IsOver() const; ///< are all players dead?
 
     private:
         void DeleteObjects();
@@ -95,6 +108,8 @@ class Level : public sf::Drawable, public EventListener
         /// SFML Rendering function
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
 
+        void CalculateOutcomeFrame();
+
         void SetupUIs();
         void SetupEditActions();
         void OnEditActionChange();
@@ -110,6 +125,7 @@ class Level : public sf::Drawable, public EventListener
         UI mEditUI;
         UI mGameUI; ///< \note I shouldn't create a new one for each level... But this is Ludum Dare, screw good design XD (I don't actually have any ingame UI)
         UI mGameOverUI;
+        UI mWaitingUI; ///< done with turn, waiting for opponents
         typedef std::list<EditAction*> EditActionList;
         EditActionList mEditActions;
         EditActionList::iterator mCurrentEditAction;
@@ -119,6 +135,8 @@ class Level : public sf::Drawable, public EventListener
         sf::Sound mChannel1;
 
         int mIndex;
+        unsigned int mOutcomeFramesLeft;
+        int mTimeToNextOutcomeFrame;
 };
 
 #endif // LEVEL_H

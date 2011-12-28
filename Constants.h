@@ -52,6 +52,9 @@ struct Constants
     static const sf::Keyboard::Key MOVED_KEY;
     static const sf::Keyboard::Key JUMP_KEY; // alternative key
     static const sf::Keyboard::Key RELOAD_KEY;
+
+    static const unsigned int FRAMES_PER_ROUND;
+    static const unsigned int MSEC_PER_FRAME;
 };
 
 #endif // CONSTANTS_H_INCLUDED

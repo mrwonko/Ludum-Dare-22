@@ -10,6 +10,7 @@
 #include "EditAction_NewStaticRect.h"
 #include "EditAction_Remove.h"
 #include "EditAction_MovePlayer.h"
+#include "EditAction_NewPlayer.h"
 #include "Sounds.h"
 #include <SFML/Network/Packet.hpp>
 
@@ -19,10 +20,11 @@ extern sf::RenderWindow* g_Window;
 extern Sounds g_Sounds;
 
 Level::Level(const bool editMode) :
+    Ready(false),
     mDebugPhysics(false),
     mWorld(gravity),
     mEditMode(editMode),
-    mStatus(Level::ePlaying),
+    mStatus(Level::ePlanning),
     mIndex(-1)
 {
     mWorld.SetAllowSleeping(true);
@@ -259,9 +261,16 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     }
     else
     {
-        if(mStatus == ePlaying)
+        if(!mPlayers[mIndex]->IsDead())
         {
-            target.Draw(mGameUI);
+            if(mStatus == ePlanning)
+            {
+                target.Draw(mGameUI);
+            }
+            else
+            {
+                target.Draw(mWaitingUI);
+            }
         }
         else
         {
@@ -311,20 +320,27 @@ const bool Level::ProcessEvent(const sf::Event& event)
                     --mCurrentEditAction;
                 }
                 OnEditActionChange(); //update text and whatnot
+                return true;
             }
+        }
+        else
+        {
+            std::cout<<"Warning: no edit actions!"<<std::endl;
         }
     }
     else
     {
-        if(mStatus == ePlaying) //cannot move player when dead
+        //gameplay events - disabled in edit mode
+        if(mIndex != -1)
         {
-            //gameplay events - disabled in edit mode
-            if(mIndex != -1)
+            if(event.Type == sf::Event::KeyPressed && event.Key.Code == sf::Keyboard::Return)
             {
-                if(mPlayers[mIndex]->ProcessEvent(event))
-                {
-                    return true;
-                }
+                Ready = true;
+                mStatus = eWaiting;
+            }
+            else if(mPlayers[mIndex]->ProcessEvent(event))
+            {
+                return true;
             }
         }
     }
@@ -387,49 +403,45 @@ const bool Level::Save()
 
 void Level::Update(unsigned int deltaT_msec)
 {
-    if(mEditMode)
+    if(sf::Keyboard::IsKeyPressed(Constants::MOVEL_KEY))
     {
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVEL_KEY))
-        {
-            mEditCameraPosition.x -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
-        }
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVER_KEY))
-        {
-            mEditCameraPosition.x += Constants::EDITMODE_CAMSPEED * deltaT_msec;
-        }
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVEU_KEY))
-        {
-            mEditCameraPosition.y -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
-        }
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVED_KEY))
-        {
-            mEditCameraPosition.y += Constants::EDITMODE_CAMSPEED * deltaT_msec;
-        }
-        assert(g_Window != NULL);
-        SetViewPos(*g_Window, mEditCameraPosition);
+        mEditCameraPosition.x -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
     }
-    else
+    if(sf::Keyboard::IsKeyPressed(Constants::MOVER_KEY))
     {
-        // Update Physics
-        mWorld.Step(deltaT_msec / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
-        // Update Objects - after physics so they can update accordingly
-        for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
-        {
-            (*it)->Update(deltaT_msec);
-        }
-        if(mStatus == ePlaying)
-        {
-            // Update Players //TODO
-        }
-        // Update particles
-        mParticleSystem.Update(deltaT_msec);
+        mEditCameraPosition.x += Constants::EDITMODE_CAMSPEED * deltaT_msec;
     }
+    if(sf::Keyboard::IsKeyPressed(Constants::MOVEU_KEY))
+    {
+        mEditCameraPosition.y -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
+    }
+    if(sf::Keyboard::IsKeyPressed(Constants::MOVED_KEY))
+    {
+        mEditCameraPosition.y += Constants::EDITMODE_CAMSPEED * deltaT_msec;
+    }
+    assert(g_Window != NULL);
+    SetViewPos(*g_Window, mEditCameraPosition);
+
+    if(mStatus == eOutcome)
+    {
+        mTimeToNextOutcomeFrame -= deltaT_msec;
+        while(mTimeToNextOutcomeFrame < 0)
+        {
+            CalculateOutcomeFrame();
+        }
+    }
+
 }
 
 void Level::SetupUIs()
 {
     //  Game UI
     //...
+
+    UIText* waitingText = new UIText;
+    waitingText->SetCoordinates(sf::Vector2f(0.f, 0.f));
+    waitingText->SetText("Done. Waiting for opponents...");
+    mWaitingUI.AddElement("waiting", waitingText);
 
     //  Edit UI
     //current action
@@ -439,7 +451,7 @@ void Level::SetupUIs()
 
     UIText* helpText = new UIText;
     helpText->SetCoordinates(sf::Vector2f(0.f, -200.f));
-    helpText->SetText("F2 and F3 change the level\nF5 saves\nR reloads (save first!)\nF6 adds a new level (at the end)\nHold control to snap\nScroll mousewheel to change tool");
+    helpText->SetText("F5 saves\n\nHold control to snap\nScroll mousewheel to change tool");
     mEditUI.AddElement("help", helpText);
 
     UIText* editmodeText = new UIText;
@@ -456,7 +468,7 @@ void Level::SetupUIs()
 
     //  Game Over UI
     UIText* retryText = new UIText;
-    retryText->SetText("Press R to retry");
+    retryText->SetText("You're le dead.");
     retryText->SetCoordinates(sf::Vector2f(0.f, 0.f));
     mGameOverUI.AddElement("retry", retryText);
 }
@@ -468,6 +480,7 @@ void Level::SetupEditActions()
     mEditActions.push_back(new EditAction_Remove(this));
     mEditActions.push_back(new EditAction_NewStaticRect(this));
     mEditActions.push_back(new EditAction_MovePlayer(this));
+    mEditActions.push_back(new EditAction_NewPlayer(this));
 
     //set current one to first one
     assert(!mEditActions.empty());
@@ -505,16 +518,86 @@ const unsigned int Level::GetNumPlayers() const
 
 const bool Level::SetNumPlayers(const unsigned int count)
 {
-    if(count > GetNumPlayers())
+    if(count > mPlayers.size())
     {
         std::cerr<<"Cannot create additional players in level!"<<std::endl;
         return false;
     }
-    std::vector<Player*>::iterator it = mPlayers.begin();
-    it = it + (mPlayers.size() - count + 1); //start deleting at next one
-    while(it != mPlayers.end())
+    for(std::vector<Player*>::iterator it = mPlayers.begin() + count; it != mPlayers.end(); ++it)
     {
-        mPlayers.erase(it++);
+        delete *it;
     }
+    mPlayers.erase(mPlayers.begin() + count, mPlayers.end());
+    assert(mPlayers.size() == count);
     return true;
+}
+
+void Level::AddPlayer(Player* player)
+{
+    player->SetIndex(mPlayers.size());
+    mPlayers.push_back(player);
+}
+
+void Level::RemovePlayer(const unsigned int index)
+{
+    if( index >= mPlayers.size()) return;
+    delete mPlayers[index];
+    for(unsigned int i = index + 1; i < mPlayers.size(); ++i)
+    {
+        mPlayers[i]->SetIndex(i-1);
+        mPlayers[i-1] = mPlayers[i];
+    }
+    mPlayers.erase(mPlayers.end()-1);
+}
+
+void Level::ShowOutcome()
+{
+    mStatus = eOutcome;
+    mOutcomeFramesLeft = Constants::FRAMES_PER_ROUND;
+    mTimeToNextOutcomeFrame = 0;
+}
+
+void Level::CalculateOutcomeFrame()
+{
+    mTimeToNextOutcomeFrame += Constants::MSEC_PER_FRAME;
+    mOutcomeFramesLeft -= 1;
+    if(mOutcomeFramesLeft == 0)
+    {
+        mStatus = ePlanning;
+    }
+
+    // Update Physics
+    mWorld.Step(Constants::MSEC_PER_FRAME / 1000.0f, PHYS_VELOCITY_ITERATIONS, PHYS_POSITION_ITERATIONS);
+    // Update Objects - after physics so they can update accordingly
+    for(std::list<Object*>::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+    {
+        (*it)->Update(Constants::MSEC_PER_FRAME);
+    }
+    for(std::vector<Player*>::iterator it = mPlayers.begin(); it != mPlayers.end(); ++it)
+    {
+        (*it)->Update(Constants::MSEC_PER_FRAME);
+    }
+    // Update particles
+    mParticleSystem.Update(Constants::MSEC_PER_FRAME);
+}
+
+void Level::CalculateOutcome()
+{
+    for(unsigned int i = 0; i < Constants::FRAMES_PER_ROUND; ++i)
+    {
+        CalculateOutcomeFrame();
+    }
+}
+
+const bool Level::IsOver() const
+{
+    unsigned int numAlive = 0;
+    for(std::vector<Player*>::const_iterator it = mPlayers.begin(); it != mPlayers.end(); ++it)
+    {
+        if(!(**it).IsDead())
+        {
+            ++numAlive;
+        }
+    }
+    return numAlive < 2;
 }

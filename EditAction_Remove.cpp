@@ -30,6 +30,11 @@ const bool EditAction_Remove::ProcessEvent(const sf::Event& event)
                 mLevel->RemoveObject(obj);
                 delete obj;
             }
+//            else //occasionally causes bluescreens
+//            {
+//                Player* player = reinterpret_cast<Player*>(obj);
+//                mLevel->RemovePlayer(player->GetIndex());
+//            }
         }
         return true;
     }

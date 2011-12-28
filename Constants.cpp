@@ -47,3 +47,6 @@ const sf::Keyboard::Key Constants::JUMP_KEY = sf::Keyboard::Space;
 const sf::Keyboard::Key Constants::RELOAD_KEY = sf::Keyboard::R;
 
 const unsigned short Constants::PORT = 1234;
+
+const unsigned int Constants::FRAMES_PER_ROUND = 100; // 100 * 50ms = 5000ms = 5 seconds
+const unsigned int Constants::MSEC_PER_FRAME = 50;
