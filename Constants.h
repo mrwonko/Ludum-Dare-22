@@ -34,6 +34,8 @@ struct Constants
     static const float GRAVITY;
     static const float PLAYER_RADIUS;
 
+    static const unsigned int PLAYER_AIM_TIME;
+
     static const float PLAYER_DAMPING;
     static const float PLAYER_FRICTION;
     static const float PLAYER_DENSITY;

@@ -75,3 +75,18 @@ void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
         mParticles.push_back(p);
     }
 }
+
+void ParticleSystem::CreateShot(const sf::Vector2f& startPos, const sf::Vector2f& endPos)
+{
+    sf::Vector2f dif = endPos - startPos;
+
+    Particle* p = new Particle;
+    p->SetTexture(g_Textures.Explosion, true);
+    p->SetScaleY(.03f);
+    p->SetScaleX(sqrtf(dif.x * dif.x + dif.y * dif.y) / g_Textures.Explosion.GetWidth());
+    p->TotalLifetime_msec = p->RemainingLife_msec = 1000;
+    p->SetPosition(startPos);
+    p->SetRotation(atan2(dif.y, dif.x) * 180.f / M_PI);
+    p->SetBlendMode(sf::Blend::Add);
+    mParticles.push_back(p);
+}

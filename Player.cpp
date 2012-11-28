@@ -3,6 +3,8 @@
 #include "Helpers.h"
 #include <Box2D/Box2D.h>
 #include <sstream>
+#include <cmath>
+#include <list>
 #include "Sounds.h"
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Graphics.hpp>
@@ -14,7 +16,10 @@ Player::Player(Level* const level):
     Object(level),
     mRepresentative(sf::Shape::Circle(0, 0, Constants::PLAYER_RADIUS, Constants::PLAYER_COLOR)),
     mIndex(-1),
-    mDead(false)
+    mDead(false),
+    mAngleIndicator(sf::Shape::Line(sf::Vector2f(0.f, 0.f), sf::Vector2f(2.f * Constants::PLAYER_RADIUS, 0.f), 0.05f, sf::Color::White)),
+    mTargetIndex(-1),
+    mAimTime(0)
 {
     mIndexText.SetFont(g_Font);
     mIndexText.SetScale(0.05f, 0.05f);
@@ -49,6 +54,7 @@ void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     if(!mDead) //Player explodes on death and is no longer rendered!
     {
         target.Draw(mRepresentative);
+        target.Draw(mAngleIndicator);
         target.Draw(mIndexText);
 
         if(mIndex != -1 && mIndex == mLevel->GetIndex())
@@ -115,28 +121,6 @@ const bool Player::Deserialize(sf::Packet& packet)
     return true;
 }
 
-namespace
-{
-    struct contactInfo
-    {
-        b2Vec2 contactPoint,
-               normal;
-    };
-    class ContactPointCallback : public b2QueryCallback
-    {
-    public:
-        ContactPointCallback() {}
-        typedef std::vector<contactInfo> foo; //may not need all of this
-        virtual bool ReportFixture (b2Fixture *fixture)
-        {
-            return true; //continue
-        }
-
-    private:
-
-    };
-}
-
 const bool Player::ProcessEvent(const sf::Event& event)
 {
     return false;
@@ -144,12 +128,145 @@ const bool Player::ProcessEvent(const sf::Event& event)
 
 void Player::Update(unsigned int deltaT_msec)
 {
+    if(mDead)
+    {
+        return;
+    }
+    //follow target (angle), if any and still visible
+    //if not visible anymore: lose it
+    if(mTargetIndex != -1)
+    {
+        Player* target = mLevel->GetPlayer(mTargetIndex);
+        if(IsVisible(target) && !target->IsDead())
+        {
+            sf::Vector2f dif = target->GetPosition() - GetPosition();
+            mAngleIndicator.SetRotation(180.f / M_PI * atan2(dif.y, dif.x));
+
+            mAimTime += deltaT_msec;
+            if(mAimTime >= Constants::PLAYER_AIM_TIME)
+            {
+                mLevel->GetParticleSystem().CreateShot(GetPosition(), target->GetPosition());
+                target->Kill();
+                mTargetIndex = -1;
+                mAimTime = 0;
+            }
+        }
+        else
+        {
+            mAimTime = 0;
+            mTargetIndex = -1;
+        }
+    }
     if(mBody->IsAwake())
     {
         const b2Vec2& pos = mBody->GetPosition();
         sf::Drawable::SetPosition(pos.x, pos.y);
     }
-    // move towards next waypoint
+    //  try and aim
+    //only if currently no target
+    if(mTargetIndex == -1)
+    {
+        //who's in the 90° cone in front?
+        float bestDot = -1.f;
+
+        float myAngleRad = M_PI / 180.f * mAngleIndicator.GetRotation();
+        b2Vec2 myAngle(cos(myAngleRad), sin(myAngleRad));
+        for(unsigned int i = 0; i < mLevel->GetNumPlayers(); ++i)
+        {
+            if(i == mIndex) //won't shoot myself
+            {
+                continue;
+            }
+            Player* target = mLevel->GetPlayer(i);
+            assert(target != NULL);
+            sf::Vector2f dif = target->GetPosition() - GetPosition();
+            b2Vec2 b2Dif(dif.x, dif.y);
+            b2Dif.Normalize();
+            assert(b2Dif.LengthSquared() > 0.f);
+            float dot = b2Dot(myAngle, b2Dif);
+            if(dot < cos(M_PI_2)) //not in front?
+            {
+                continue;
+            }
+            if(target->IsDead()) //not alive?
+            {
+                continue;
+            }
+            if(!IsVisible(target)) //not visible?
+            {
+                continue;
+            }
+            if(dot < bestDot) //not more in front than last one?
+            {
+                continue;
+            }
+            mTargetIndex = i;
+        }
+    }
+    //  move towards next waypoint
+    //no moving if target acquired
+    if(mTargetIndex != -1)
+    {
+        return;
+    }
+}
+
+namespace
+{
+    // This callback finds the closest hit. Given body is ignored
+    class RayCastClosestCallback : public b2RayCastCallback
+    {
+    public:
+        RayCastClosestCallback(b2Body* ignoreMe) :
+            mHit(false),
+            mTarget(NULL),
+            mIgnored(ignoreMe)
+        {
+        }
+
+        float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point,
+            const b2Vec2& normal, float32 fraction)
+        {
+            b2Body* body = fixture->GetBody();
+            if(body == mIgnored)
+            {
+                //filter
+                return -1.f;
+            }
+
+            mTarget = body;
+            mHit = true;
+            mPoint = point;
+            mNormal = normal;
+            return fraction;
+        }
+
+        bool mHit;
+        b2Vec2 mPoint;
+        b2Vec2 mNormal;
+        b2Body* mTarget;
+
+    private:
+        b2Body* mIgnored;
+    };
+}
+
+const bool Player::IsVisible(Player* player)
+{
+    assert(player != NULL);
+    assert(player != this);
+    if(player->GetPosition() == GetPosition())
+    {
+        return true;
+    }
+    RayCastClosestCallback callback(mBody);
+    b2World& world = mLevel->GetWorld();
+    world.RayCast(&callback, b2Vec2(GetPosition().x, GetPosition().y), b2Vec2(player->GetPosition().x, player->GetPosition().y));
+    if(callback.mHit)
+    {
+        return player == callback.mTarget->GetUserData();
+    }
+    return false;
 }
 
 void Player::SetPosition(const sf::Vector2f& pos)
@@ -167,6 +284,7 @@ void Player::Stop()
 
 void Player::Kill()
 {
+    mDead = true;
     mLevel->GetParticleSystem().CreateExplosion(GetPosition());
 }
 

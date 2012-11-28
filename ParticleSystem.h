@@ -13,7 +13,7 @@ class ParticleSystem : public sf::Drawable
         virtual ~ParticleSystem();
 
         void CreateExplosion(const sf::Vector2f& pos);
-        void CreateMoveSpark(const sf::Vector2f& pos, const float sizeMult);
+        void CreateShot(const sf::Vector2f& startPos, const sf::Vector2f& endPos);
 
         void Update(unsigned int deltaT_msec);
 

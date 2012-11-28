@@ -50,7 +50,14 @@ class Player : public Object
         sf::Text mIndexText;
         bool mDead;
 
+        sf::Shape mAngleIndicator; //not only indicates the angle, also stores it (its rotation)
+
         void UpdateIndex();
+
+        int mTargetIndex; //-1 = none
+        int mAimTime; ///< for how long have I aimed so far?
+
+        const bool IsVisible(Player* player);
 };
 
 #endif // PLAYER_H

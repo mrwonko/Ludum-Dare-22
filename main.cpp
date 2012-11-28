@@ -299,11 +299,12 @@ int main()
                                 }
                                 else if(msg == eReady)
                                 {
+                                    std::cout<<"A player is ready! " <<numReadyClients << "/" << clientSockets.size() << std::endl;
                                     ++numReadyClients;
                                     if(numReadyClients == clientSockets.size()) //all players ready?
                                     {
                                         numReadyClients = 0;
-                                        for(int i = 0; i < level.GetNumPlayers(); ++i)
+                                        for(unsigned int i = 0; i < level.GetNumPlayers(); ++i)
                                         {
                                             Player* player = level.GetPlayer(i);
                                             assert(player != NULL);

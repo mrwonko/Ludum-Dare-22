@@ -274,7 +274,10 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
         }
         else
         {
-            target.Draw(mGameOverUI);
+            if(mStatus != eOutcome) //don't show game over before you're dead!
+            {
+                target.Draw(mGameOverUI);
+            }
         }
     }
 }
