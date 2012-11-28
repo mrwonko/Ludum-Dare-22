@@ -18,12 +18,12 @@ EditAction_NewStaticRect::~EditAction_NewStaticRect()
 
 const bool EditAction_NewStaticRect::ProcessEvent(const sf::Event& event)
 {
-    if(event.Type == sf::Event::MouseButtonPressed)
+    if(event.type == sf::Event::MouseButtonPressed)
     {
         //starting/finishing object
-        if(event.MouseButton.Button == sf::Mouse::Left)
+        if(event.mouseButton.button == sf::Mouse::Left)
         {
-            sf::Vector2f mousePos(event.MouseButton.X, event.MouseButton.Y);
+            sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
             mousePos = ProcessEditMousePos(sf::Vector2f(mousePos));
             if(mNewRect)
             {
@@ -39,7 +39,7 @@ const bool EditAction_NewStaticRect::ProcessEvent(const sf::Event& event)
             }
         }
         //aborting
-        else if(event.MouseButton.Button == sf::Mouse::Right && mNewRect)
+        else if(event.mouseButton.button == sf::Mouse::Right && mNewRect)
         {
             mLevel->RemoveObject(mNewRect);
             delete mNewRect;
@@ -47,9 +47,9 @@ const bool EditAction_NewStaticRect::ProcessEvent(const sf::Event& event)
         }
     }
     // Rect creation - size change
-    else if(event.Type == sf::Event::MouseMoved && mNewRect != NULL)
+    else if(event.type == sf::Event::MouseMoved && mNewRect != NULL)
     {
-        sf::Vector2f mousePos(event.MouseMove.X, event.MouseMove.Y);
+        sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
         mNewRect->SetCorner2(ProcessEditMousePos(sf::Vector2f(mousePos)));
     }
     return false;

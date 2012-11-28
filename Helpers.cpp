@@ -4,14 +4,15 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 #include <Box2D/Box2D.h>
 
 void SetViewPos(sf::RenderWindow& window, const sf::Vector2f& center)
 {
     //I could cache this by making it static but the viewsize might change?
-    sf::Vector2f viewSize(float(window.GetWidth()) / window.GetHeight() * Constants::GAMEFIELD_HEIGHT, Constants::GAMEFIELD_HEIGHT);
+    sf::Vector2f viewSize(float(window.getSize().x) / window.getSize().y * Constants::GAMEFIELD_HEIGHT, Constants::GAMEFIELD_HEIGHT);
     sf::View view(center, viewSize);
-    window.SetView(view);
+    window.setView(view);
 }
 
 unsigned int GetLevelCount()
@@ -83,18 +84,18 @@ extern sf::RenderWindow* g_Window;
 sf::Vector2f ScreenToWorldSpace(const sf::Vector2f& screenSpaceCoord)
 {
     assert(g_Window != NULL);
-    const sf::Vector2f& viewSize = g_Window->GetView().GetSize();
-    const sf::Vector2f viewCorner = g_Window->GetView().GetCenter() - 0.5f * viewSize;
-    return sf::Vector2f(viewCorner.x + screenSpaceCoord.x * viewSize.x / g_Window->GetWidth(), viewCorner.y + screenSpaceCoord.y * viewSize.y / g_Window->GetHeight());
+    const sf::Vector2f& viewSize = g_Window->getView().getSize();
+    const sf::Vector2f viewCorner = g_Window->getView().getCenter() - 0.5f * viewSize;
+    return sf::Vector2f(viewCorner.x + screenSpaceCoord.x * viewSize.x / g_Window->getSize().x, viewCorner.y + screenSpaceCoord.y * viewSize.y / g_Window->getSize().y);
 }
 
 sf::Vector2f ProcessEditMousePos(const sf::Vector2f& pos)
 {
     sf::Vector2f mousePos = ScreenToWorldSpace(pos);
-    if(sf::Keyboard::IsKeyPressed(sf::Keyboard::LControl))
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
     {
-        mousePos.x = roundf(mousePos.x);
-        mousePos.y = roundf(mousePos.y);
+        mousePos.x = round(mousePos.x);
+        mousePos.y = round(mousePos.y);
     }
     return mousePos;
 }

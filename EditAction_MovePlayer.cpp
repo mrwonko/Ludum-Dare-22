@@ -16,9 +16,9 @@ EditAction_MovePlayer::~EditAction_MovePlayer()
 
 const bool EditAction_MovePlayer::ProcessEvent(const sf::Event& event)
 {
-    if(event.Type == sf::Event::MouseButtonPressed && event.MouseButton.Button == sf::Mouse::Left)
+    if(event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
     {
-        sf::Vector2f mousePos(event.MouseButton.X, event.MouseButton.Y);
+        sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
         mousePos = ProcessEditMousePos(mousePos);
         mLevel->SetPlayerPosition(mousePos);
     }

@@ -10,8 +10,8 @@ struct Textures
 
     const bool Load()
     {
-        return Spark.LoadFromFile("data/textures/spark.png") &&
-               Explosion.LoadFromFile("data/textures/explosion.png");
+        return Spark.loadFromFile("data/textures/spark.png") &&
+               Explosion.loadFromFile("data/textures/explosion.png");
     }
 };
 

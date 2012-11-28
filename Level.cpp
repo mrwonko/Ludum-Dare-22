@@ -124,35 +124,35 @@ void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     // Draw Elements
     for(std::list<Object*>::const_iterator it = mObjects.begin(); it != mObjects.end(); ++it)
     {
-        target.Draw(**it);
+        target.draw(**it);
     }
 
     // Draw Player
-    target.Draw(mPlayer);
+    target.draw(mPlayer);
 
     // Draw Particles
-    target.Draw(mParticleSystem);
+    target.draw(mParticleSystem);
 
     // Draw Debug Physics Overlay
     if(mDebugPhysics)
     {
-        target.Draw(mDebugDraw);
+        target.draw(mDebugDraw);
     }
 
     // Draw UI
     if(mEditMode)
     {
-        target.Draw(mEditUI);
+        target.draw(mEditUI);
     }
     else
     {
         if(mStatus == ePlaying)
         {
-            target.Draw(mGameUI);
+            target.draw(mGameUI);
         }
         else
         {
-            target.Draw(mGameOverUI);
+            target.draw(mGameOverUI);
         }
     }
 }
@@ -162,7 +162,7 @@ const bool Level::ProcessEvent(const sf::Event& event)
     if(mEditMode)
     {
         //special editmode events - may overwrite base events (because they're handled first - they have priority.)
-        if(event.Type == sf::Event::KeyPressed && event.Key.Code == Constants::LEVELSAVE_KEY)
+        if(event.type == sf::Event::KeyPressed && event.key.code == Constants::LEVELSAVE_KEY)
         {
             if(Save())
             {
@@ -178,10 +178,10 @@ const bool Level::ProcessEvent(const sf::Event& event)
             {
                 return true;
             }
-            if(event.Type == sf::Event::MouseWheelMoved)
+            if(event.type == sf::Event::MouseWheelMoved)
             {
                 (*mCurrentEditAction)->OnExit();
-                if(event.MouseWheel.Delta < 0)
+                if(event.mouseWheel.delta < 0)
                 {
                     ++mCurrentEditAction;
                     if(mCurrentEditAction == mEditActions.end())
@@ -189,7 +189,7 @@ const bool Level::ProcessEvent(const sf::Event& event)
                         mCurrentEditAction = mEditActions.begin();
                     }
                 }
-                else if(event.MouseWheel.Delta > 0)
+                else if(event.mouseWheel.delta > 0)
                 {
                     if(mCurrentEditAction == mEditActions.begin())
                     {
@@ -213,11 +213,11 @@ const bool Level::ProcessEvent(const sf::Event& event)
         }
     }
     //events that are always handled, no matter if editmode is enabled
-    if(event.Type == sf::Event::KeyPressed)
+    if(event.type == sf::Event::KeyPressed)
     {
         //Physics Debug Toggle
         //#ifdef _DEBUG //(Who cares if it's in release? May actually help track down bugs or something, leave it in.)
-        if(event.Key.Code == Constants::PHYSDEBUG_KEY)
+        if(event.key.code == Constants::PHYSDEBUG_KEY)
         {
             mDebugPhysics = !mDebugPhysics;
             return true;

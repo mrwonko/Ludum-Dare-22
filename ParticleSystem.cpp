@@ -44,10 +44,10 @@ void ParticleSystem::Update(unsigned int deltaT_msec)
         else
         {
             float alpha = 255.f*p->RemainingLife_msec / p->TotalLifetime_msec;
-            p->SetColor(sf::Color(alpha, alpha, alpha)); //since I use Blendmode Add
-            sf::Vector2f newPos(p->GetPosition());
+            p->setColor(sf::Color(alpha, alpha, alpha)); //since I use Blendmode Add
+            sf::Vector2f newPos(p->setPosition());
             newPos += float(deltaT_msec) * (p->Velocity);
-            p->SetPosition(newPos);
+            p->setPosition(newPos);
             ++it;
         }
     }
@@ -65,11 +65,11 @@ void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
 {
     Particle pattern;
     boost::uniform_01<boost::mt19937> FloatGenerator(s_rng);
-    pattern.SetTexture(g_Textures.Explosion, true);
-    pattern.SetScale(0.03f, 0.03f);
-    pattern.SetBlendMode(sf::Blend::Add);
+    pattern.setTexture(g_Textures.Explosion, true);
+    pattern.setScale(0.03f, 0.03f);
+    pattern.setBlendMode(sf::BlendAdd);
     pattern.TotalLifetime_msec = pattern.RemainingLife_msec = Constants::EXPLOSION_PARTICLE_LIFETIME_MSEC;
-    pattern.SetPosition(pos);
+    pattern.setPosition(pos);
     for(unsigned int i = 0; i < Constants::EXPLOSION_NUM_PARTICLES; ++i)
     {
         Particle* p = new Particle(pattern);
@@ -83,13 +83,13 @@ void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
 void ParticleSystem::CreateMoveSpark(const sf::Vector2f& pos, const float sizeMult)
 {
     Particle* p = new Particle;
-    p->SetTexture(g_Textures.Spark, true);
+    p->setTexture(g_Textures.Spark, true);
     float size = 0.02f * sizeMult;
-    p->SetScale(size, size);
-    p->SetOrigin(g_Textures.Spark.GetWidth()/2, g_Textures.Spark.GetHeight()/2);
-    p->SetBlendMode(sf::Blend::Add);
+    p->setScale(size, size);
+    p->setOrigin(g_Textures.Spark.getSize().x/2, g_Textures.Spark.getSize().y/2);
+    p->setBlendMode(sf::BlendAdd);
     p->TotalLifetime_msec = p->RemainingLife_msec = Constants::MOVESPARK_LIFETIME_MSEC;
-    p->SetPosition(pos);
+    p->setPosition(pos);
     p->Velocity = Constants::MOVESPARK_SPEED * sf::Vector2f(0, 1);
     mParticles.push_back(p);
 }

@@ -45,7 +45,7 @@ void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     if(!mLevel->IsLost()) //Player explodes on death and is no longer rendered!
     {
-        target.Draw(mRepresentative);
+        target.draw(mRepresentative);
     }
 }
 
