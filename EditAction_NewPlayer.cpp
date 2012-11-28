@@ -16,9 +16,9 @@ EditAction_NewPlayer::~EditAction_NewPlayer()
 
 const bool EditAction_NewPlayer::ProcessEvent(const sf::Event& event)
 {
-    if(event.Type == sf::Event::MouseButtonPressed && event.MouseButton.Button == sf::Mouse::Left)
+    if(event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
     {
-        sf::Vector2f mousePos(event.MouseButton.X, event.MouseButton.Y);
+        sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
         mousePos = ProcessEditMousePos(sf::Vector2f(mousePos));
         Player* player = new Player(mLevel);
         player->SetPosition(mousePos);

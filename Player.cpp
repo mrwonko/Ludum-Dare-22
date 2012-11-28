@@ -53,9 +53,9 @@ void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     if(!mDead) //Player explodes on death and is no longer rendered!
     {
-        target.Draw(mRepresentative);
-        target.Draw(mAngleIndicator);
-        target.Draw(mIndexText);
+        target.draw(mRepresentative);
+        target.draw(mAngleIndicator);
+        target.draw(mIndexText);
 
         if(mIndex != -1 && mIndex == mLevel->GetIndex())
         {

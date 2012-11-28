@@ -11,9 +11,9 @@ struct Sounds
 
     const bool Load()
     {
-        return Death.LoadFromFile("data/sounds/death.wav") &&
-               Jump.LoadFromFile("data/sounds/jump.wav") &&
-               Start.LoadFromFile("data/sounds/levelstart.wav");
+        return Death.loadFromFile("data/sounds/death.wav") &&
+               Jump.loadFromFile("data/sounds/jump.wav") &&
+               Start.loadFromFile("data/sounds/levelstart.wav");
     }
 };
 

@@ -41,10 +41,10 @@ void ParticleSystem::Update(unsigned int deltaT_msec)
         else
         {
             float alpha = 255.f*p->RemainingLife_msec / p->TotalLifetime_msec;
-            p->SetColor(sf::Color(alpha, alpha, alpha)); //since I use Blendmode Add
-            sf::Vector2f newPos(p->GetPosition());
+            p->setColor(sf::Color(alpha, alpha, alpha)); //since I use Blendmode Add
+            sf::Vector2f newPos(p->setPosition());
             newPos += float(deltaT_msec) * (p->Velocity);
-            p->SetPosition(newPos);
+            p->setPosition(newPos);
             ++it;
         }
     }
@@ -61,11 +61,11 @@ void ParticleSystem::Render(sf::RenderTarget& target, sf::Renderer& renderer) co
 void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
 {
     Particle pattern;
-    pattern.SetTexture(g_Textures.Explosion, true);
-    pattern.SetScale(0.03f, 0.03f);
-    pattern.SetBlendMode(sf::Blend::Add);
+    pattern.setTexture(g_Textures.Explosion, true);
+    pattern.setScale(0.03f, 0.03f);
+    pattern.setBlendMode(sf::BlendAdd);
     pattern.TotalLifetime_msec = pattern.RemainingLife_msec = Constants::EXPLOSION_PARTICLE_LIFETIME_MSEC;
-    pattern.SetPosition(pos);
+    pattern.setPosition(pos);
     for(unsigned int i = 0; i < Constants::EXPLOSION_NUM_PARTICLES; ++i)
     {
         Particle* p = new Particle(pattern);
@@ -81,12 +81,12 @@ void ParticleSystem::CreateShot(const sf::Vector2f& startPos, const sf::Vector2f
     sf::Vector2f dif = endPos - startPos;
 
     Particle* p = new Particle;
-    p->SetTexture(g_Textures.Explosion, true);
-    p->SetScaleY(.03f);
-    p->SetScaleX(sqrtf(dif.x * dif.x + dif.y * dif.y) / g_Textures.Explosion.GetWidth());
+    p->setTexture(g_Textures.Explosion, true);
+    p->setScaleY(.03f);
+    p->setScaleX(sqrtf(dif.x * dif.x + dif.y * dif.y) / g_Textures.Explosion.GetWidth());
     p->TotalLifetime_msec = p->RemainingLife_msec = 1000;
-    p->SetPosition(startPos);
-    p->SetRotation(atan2(dif.y, dif.x) * 180.f / M_PI);
-    p->SetBlendMode(sf::Blend::Add);
+    p->setPosition(startPos);
+    p->setRotation(atan2(dif.y, dif.x) * 180.f / M_PI);
+    p->setBlendMode(sf::BlendAdd);
     mParticles.push_back(p);
 }
