@@ -93,8 +93,11 @@ if    (NOT BOX2D_INCLUDE_DIR)
 	message(FATAL_ERROR "Could not find Box2D Header files")
 endif (NOT BOX2D_INCLUDE_DIR)
 
+# find boost
+find_package(Boost REQUIRED)
+
 # set include directories
-include_directories("${CMAKE_SOURCE_DIR}/include" ${SFML_INCLUDE_DIR} ${BOX2D_INCLUDE_DIR})
+include_directories("${CMAKE_SOURCE_DIR}/include" ${SFML_INCLUDE_DIR} ${BOX2D_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 # set link targets
 target_link_libraries(MiniBlueBoxBoy ${SFML_LIBRARIES} ${BOX2D_LIBRARY})
 
