@@ -33,7 +33,7 @@ Player::Player(Level* const level):
     fixDef.density = Constants::PLAYER_DENSITY;
     mBody->CreateFixture(&fixDef);
 
-    mJumpChannel.SetBuffer(g_Sounds.Jump);
+    mJumpChannel.setBuffer(g_Sounds.Jump);
 }
 
 Player::~Player()
@@ -51,7 +51,7 @@ void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 
 const bool Player::Serialize(std::ostream& out_stream) const
 {
-    out_stream << GetPosition().x << " " << GetPosition().y << std::endl;
+    out_stream << getPosition().x << " " << getPosition().y << std::endl;
     return true;
 }
 const bool Player::Deserialize(std::istream& stream)
@@ -92,7 +92,7 @@ namespace
 const bool Player::ProcessEvent(const sf::Event& event)
 {
     // horizontal movement is handled in Update()
-    if(event.Type == sf::Event::KeyPressed && (event.Key.Code == Constants::MOVEU_KEY || event.Key.Code == Constants::JUMP_KEY))
+    if(event.type == sf::Event::KeyPressed && (event.key.code == Constants::MOVEU_KEY || event.key.code == Constants::JUMP_KEY))
     {
         //TODO: is player on floor? on wall? ...
         if(!mJumpedThisFrame) //only one impulse per frame
@@ -160,7 +160,7 @@ const bool Player::ProcessEvent(const sf::Event& event)
                 //apply opposite impulse to thing you jumped away from (opposing force)
                 contactor->ApplyLinearImpulse(-impulse, contactPoint);
                 //Play jump sound
-                mJumpChannel.Play();
+                mJumpChannel.play();
             }
         }
         return true;
@@ -174,21 +174,21 @@ void Player::Update(unsigned int deltaT_msec)
     if(mBody->IsAwake())
     {
         const b2Vec2& pos = mBody->GetPosition();
-        sf::Drawable::SetPosition(pos.x, pos.y);
+        sf::Transformable::setPosition(pos.x, pos.y);
         SetViewPos(*g_Window, sf::Vector2f(pos.x, pos.y));
     }
     //move right
-    if(sf::Keyboard::IsKeyPressed(Constants::MOVER_KEY) && mBody->GetLinearVelocity().x < Constants::PLAYER_MAX_VELOCITY)
+    if(sf::Keyboard::isKeyPressed(Constants::MOVER_KEY) && mBody->GetLinearVelocity().x < Constants::PLAYER_MAX_VELOCITY)
     {
         mBody->ApplyForce(b2Vec2(Constants::PLAYER_MOVE_FORCE, 0), mBody->GetPosition());
     }
     //move left
-    if(sf::Keyboard::IsKeyPressed(Constants::MOVEL_KEY) && mBody->GetLinearVelocity().x > -Constants::PLAYER_MAX_VELOCITY)
+    if(sf::Keyboard::isKeyPressed(Constants::MOVEL_KEY) && mBody->GetLinearVelocity().x > -Constants::PLAYER_MAX_VELOCITY)
     {
         mBody->ApplyForce(b2Vec2(-Constants::PLAYER_MOVE_FORCE, 0), mBody->GetPosition());
     }
     //move up - only if already moving up (jump height control)
-    if((sf::Keyboard::IsKeyPressed(Constants::JUMP_KEY) || sf::Keyboard::IsKeyPressed(Constants::MOVEU_KEY) ) && mBody->GetLinearVelocity().y < 0)
+    if((sf::Keyboard::isKeyPressed(Constants::JUMP_KEY) || sf::Keyboard::isKeyPressed(Constants::MOVEU_KEY) ) && mBody->GetLinearVelocity().y < 0)
     {
         mBody->ApplyForce(b2Vec2(0.f, -Constants::PLAYER_JUMP_AIR_FORCE), mBody->GetPosition());
     }
@@ -247,7 +247,7 @@ void Player::Update(unsigned int deltaT_msec)
 
 void Player::SetPosition(const sf::Vector2f& pos)
 {
-    sf::Drawable::SetPosition(pos);
+    sf::Transformable::setPosition(pos);
     mBody->SetTransform(b2Vec2(pos.x, pos.y), 0);
     mBody->SetLinearVelocity(b2Vec2(0, 0));
 }

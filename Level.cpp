@@ -224,20 +224,20 @@ const bool Level::ProcessEvent(const sf::Event& event)
         }
         //#endif
         //Editmode Toggle
-        if(event.Key.Code == Constants::LEVELEDIT_KEY)
+        if(event.key.code == Constants::LEVELEDIT_KEY)
         {
             mEditMode = !mEditMode;
             if(mEditMode)
             {
-                mEditCameraPosition = mPlayer.GetPosition();
+                mEditCameraPosition = mPlayer.getPosition();
             }
             else
             {
-                SetViewPos(*g_Window, mPlayer.GetPosition());
+                SetViewPos(*g_Window, mPlayer.getPosition());
             }
             return true;
         }
-        if(event.Key.Code == Constants::RELOAD_KEY)
+        if(event.key.code == Constants::RELOAD_KEY)
         {
             mStatus = ePlaying;
             DeleteObjects();
@@ -263,8 +263,8 @@ const bool Level::Load()
         std::cerr << "Error deserializing from \"" << GetLevelName(mIndex) << "\"!" << std::endl;
         return false;
     }
-    mChannel1.SetBuffer(g_Sounds.Start);
-    mChannel1.Play();
+    mChannel1.setBuffer(g_Sounds.Start);
+    mChannel1.play();
     return true;
 }
 
@@ -296,19 +296,19 @@ void Level::Update(unsigned int deltaT_msec)
 {
     if(mEditMode)
     {
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVEL_KEY))
+        if(sf::Keyboard::isKeyPressed(Constants::MOVEL_KEY))
         {
             mEditCameraPosition.x -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
         }
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVER_KEY))
+        if(sf::Keyboard::isKeyPressed(Constants::MOVER_KEY))
         {
             mEditCameraPosition.x += Constants::EDITMODE_CAMSPEED * deltaT_msec;
         }
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVEU_KEY))
+        if(sf::Keyboard::isKeyPressed(Constants::MOVEU_KEY))
         {
             mEditCameraPosition.y -= Constants::EDITMODE_CAMSPEED * deltaT_msec;
         }
-        if(sf::Keyboard::IsKeyPressed(Constants::MOVED_KEY))
+        if(sf::Keyboard::isKeyPressed(Constants::MOVED_KEY))
         {
             mEditCameraPosition.y += Constants::EDITMODE_CAMSPEED * deltaT_msec;
         }
@@ -411,9 +411,9 @@ void Level::RemoveObject(Object* obj)
 
 void Level::Lose()
 {
-    mParticleSystem.CreateExplosion(mPlayer.GetPosition());
+    mParticleSystem.CreateExplosion(mPlayer.getPosition());
     mStatus = eLost;
-    mChannel1.SetBuffer(g_Sounds.Death);
-    mChannel1.Play();
+    mChannel1.setBuffer(g_Sounds.Death);
+    mChannel1.play();
     mPlayer.Stop(); // or the physical body would move further, potentially dying again or even winning.
 }

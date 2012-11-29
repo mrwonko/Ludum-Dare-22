@@ -54,19 +54,19 @@ namespace
 void UI::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     //save old view (gamefield) and create new one (UI space)
-    sf::View oldView = target.GetView();
-    sf::Vector2f dimensions(target.GetWidth(), target.GetHeight());
+    sf::View oldView = target.getView();
+    sf::Vector2f dimensions(target.getSize().x, target.getSize().y);
     sf::View view(dimensions * 0.5f, dimensions);
-    target.SetView(view);
+    target.setView(view);
 
     //render elements, calculating their actual positions (i.e. converting negative coordinates)
     for(ElementMap::const_iterator it = mElements.begin(); it != mElements.end(); ++it)
     {
         UIElement& element = *(it->second);
-        element.SetPosition(CalculateActualPosition(dimensions, element.GetCoordinates()));
-        target.Draw(element);
+        element.setPosition(CalculateActualPosition(dimensions, element.GetCoordinates()));
+        target.draw(element);
     }
 
     //revert old view
-    target.SetView(oldView);
+    target.setView(oldView);
 }

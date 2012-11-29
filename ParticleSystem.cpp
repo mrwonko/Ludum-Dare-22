@@ -6,6 +6,7 @@
 #include <boost/random/uniform_01.hpp>
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <boost/math/constants/constants.hpp>
 
 extern Textures g_Textures;
 
@@ -45,7 +46,7 @@ void ParticleSystem::Update(unsigned int deltaT_msec)
         {
             float alpha = 255.f*p->RemainingLife_msec / p->TotalLifetime_msec;
             p->setColor(sf::Color(alpha, alpha, alpha)); //since I use Blendmode Add
-            sf::Vector2f newPos(p->setPosition());
+            sf::Vector2f newPos(p->getPosition());
             newPos += float(deltaT_msec) * (p->Velocity);
             p->setPosition(newPos);
             ++it;
@@ -55,9 +56,11 @@ void ParticleSystem::Update(unsigned int deltaT_msec)
 
 void ParticleSystem::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
+	sf::RenderStates states;
+	states.blendMode = sf::BlendAdd;
     for(ParticleList::const_iterator it = mParticles.begin(); it != mParticles.end(); ++it)
     {
-        target.Draw(**it);
+        target.draw(**it, states);
     }
 }
 
@@ -67,15 +70,14 @@ void ParticleSystem::CreateExplosion(const sf::Vector2f& pos)
     boost::uniform_01<boost::mt19937> FloatGenerator(s_rng);
     pattern.setTexture(g_Textures.Explosion, true);
     pattern.setScale(0.03f, 0.03f);
-    pattern.setBlendMode(sf::BlendAdd);
     pattern.TotalLifetime_msec = pattern.RemainingLife_msec = Constants::EXPLOSION_PARTICLE_LIFETIME_MSEC;
     pattern.setPosition(pos);
     for(unsigned int i = 0; i < Constants::EXPLOSION_NUM_PARTICLES; ++i)
     {
         Particle* p = new Particle(pattern);
-        float movedir = FloatGenerator() * M_PI * 2.f;
+        float movedir = FloatGenerator() * boost::math::constants::pi<float>() * 2.f;
         p->Velocity = Constants::EXPLOSION_PARTICLE_SPEED * sf::Vector2f(cos(movedir), sin(movedir));
-        p->SetRotation(movedir / M_PI * 180.f);
+        p->setRotation(movedir / boost::math::constants::pi<float>() * 180.f);
         mParticles.push_back(p);
     }
 }
@@ -87,7 +89,6 @@ void ParticleSystem::CreateMoveSpark(const sf::Vector2f& pos, const float sizeMu
     float size = 0.02f * sizeMult;
     p->setScale(size, size);
     p->setOrigin(g_Textures.Spark.getSize().x/2, g_Textures.Spark.getSize().y/2);
-    p->setBlendMode(sf::BlendAdd);
     p->TotalLifetime_msec = p->RemainingLife_msec = Constants::MOVESPARK_LIFETIME_MSEC;
     p->setPosition(pos);
     p->Velocity = Constants::MOVESPARK_SPEED * sf::Vector2f(0, 1);

@@ -13,12 +13,12 @@ class UIText : public UIElement
 
         void SetText(const std::string& text)
         {
-            mText.SetString(text);
+            mText.setString(text);
         }
 
         void SetCharacterSize(unsigned int size)
         {
-            mText.SetCharacterSize(size);
+            mText.setCharacterSize(size);
         }
 
     private:

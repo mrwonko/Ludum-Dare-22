@@ -18,14 +18,14 @@ namespace
     void SetWinView(sf::RenderTarget& target)
     {
         float height = 600;
-        float width = height * target.GetWidth() / target.GetHeight();
-        target.SetView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(width, height)));
+        float width = height * target.getSize().x / target.getSize().y;
+        target.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(width, height)));
     }
 }
 
 int main()
 {
-    if(!g_Font.LoadFromFile(Constants::FONTPATH))
+    if(!g_Font.loadFromFile(Constants::FONTPATH))
     {
         std::cerr << "Could not load font \"" << Constants::FONTPATH << "\"!" << std::endl;
         return 0;
@@ -51,7 +51,7 @@ int main()
     int curLevelIndex = -1; // when this == numLevels, we're at the game won screen.
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Mini Blue Box Boy"); //default style -> close & resize
-    window.EnableKeyRepeat(false); // no holding the jump button
+    window.setKeyRepeatEnabled(false); // no holding the jump button
     g_Window = &window;
 
     Level* curLevel = NULL;
@@ -59,25 +59,25 @@ int main()
     SetViewPos(window, sf::Vector2f(0, 0));
 
     sf::Text winnerText;
-    winnerText.SetFont(g_Font);
-    winnerText.SetString("You win!");
-    winnerText.SetCharacterSize(200.f);
-    sf::FloatRect textRec = winnerText.GetRect();
-    winnerText.SetPosition(-textRec.Width / 2.f, -textRec.Height / 2.f);
-    winnerText.SetColor(sf::Color::White);
+    winnerText.setFont(g_Font);
+    winnerText.setString("You win!");
+    winnerText.setCharacterSize(200.f);
+    sf::FloatRect textRec = winnerText.getRect();
+    winnerText.setPosition(-textRec.width / 2.f, -textRec.height / 2.f);
+    winnerText.setColor(sf::Color::White);
 
     bool inFocus = true;
-    while(window.IsOpened())
+    while(window.isOpen())
     {
         //  Event Handling
         sf::Event ev;
-        while(window.PollEvent(ev))
+        while(window.pollEvent(ev))
         {
-            switch(ev.Type)
+            switch(ev.type)
             {
             case sf::Event::Closed:
                 {
-                    window.Close();
+                    window.close();
                     break;
                 }
             case sf::Event::Resized:
@@ -85,7 +85,7 @@ int main()
                     if(curLevelIndex < numLevels)
                     {
                         //update window view, keeping old center but possibly changing the size (i.e. update aspect accordingly)
-                        SetViewPos(window, window.GetView().GetCenter());
+                        SetViewPos(window, window.getView().getCenter());
                     }
                     else
                     {
@@ -105,7 +105,7 @@ int main()
                 }
             case sf::Event::KeyPressed:
                 {
-                    if(ev.Key.Code == Constants::PREVLEVEL_KEY)
+                    if(ev.key.code == Constants::PREVLEVEL_KEY)
                     {
                         if(curLevelIndex > 0)
                         {
@@ -118,11 +118,11 @@ int main()
                             curLevel = new Level(curLevelIndex);
                             if(!curLevel->Load())
                             {
-                                window.Close();
+                                window.close();
                             }
                         }
                     }
-                    else if(ev.Key.Code == Constants::NEXTLEVEL_KEY)
+                    else if(ev.key.code == Constants::NEXTLEVEL_KEY)
                     {
                         if(curLevelIndex < numLevels)
                         {
@@ -135,7 +135,7 @@ int main()
                                 curLevel = new Level(curLevelIndex);
                                 if(!curLevel->Load())
                                 {
-                                    window.Close();
+                                    window.close();
                                 }
                             }
                             else
@@ -144,7 +144,7 @@ int main()
                             }
                         }
                     }
-                    else if (ev.Key.Code == sf::Keyboard::F6) //can't be arsed to add constant
+                    else if (ev.key.code == sf::Keyboard::F6) //can't be arsed to add constant
                     {
                         if(curLevelIndex < numLevels)
                         {
@@ -185,7 +185,7 @@ int main()
                 curLevel = new Level(curLevelIndex);
                 if(!curLevel->Load())
                 {
-                    window.Close();
+                    window.close();
                 }
             }
             else
@@ -205,22 +205,22 @@ int main()
         }
         else
         {
-            sf::Sleep(5); //also, don't clog the cpu
+            sf::sleep(sf::seconds(5)); //also, don't clog the cpu
         }
 
         //  Rendering
 
-        window.Clear();
+        window.clear();
         if(curLevelIndex < numLevels)
         {
-            window.Draw(*curLevel);
+            window.draw(*curLevel);
         }
         else
         {
-            window.Draw(winnerText);
+            window.draw(winnerText);
         }
 
-        window.Display();
+        window.display();
     }
     if(curLevel != NULL)
     {

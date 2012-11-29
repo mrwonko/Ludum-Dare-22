@@ -26,6 +26,7 @@ class StaticRect : public Object //, public EventListener //event listener: may 
         virtual void Edit_OnClicked(const sf::Mouse::Button button);
 
     protected:
+		void setPosition(const sf::Vector2f&); //renamed in SFML to this - not implementing this so I get an error if I accidentally call it
         virtual void UpdateShape();
 
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;

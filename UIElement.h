@@ -2,10 +2,11 @@
 #define UIELEMENT_H
 
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 
 class UI;
 
-class UIElement : public sf::Drawable
+class UIElement : public sf::Drawable, public sf::Transformable
 {
     public:
         UIElement();

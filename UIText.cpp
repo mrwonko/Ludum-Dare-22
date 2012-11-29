@@ -5,7 +5,7 @@ extern sf::Font g_Font;
 
 UIText::UIText()
 {
-    mText.SetFont(g_Font);
+    mText.setFont(g_Font);
     //default character size is 30
     //ctor
 }
@@ -17,5 +17,5 @@ UIText::~UIText()
 
 void UIText::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
-    target.Draw(mText);
+    target.draw(mText);
 }

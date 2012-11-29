@@ -71,7 +71,7 @@ const bool StaticRect::Deserialize(std::istream& stream)
 
 void StaticRect::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
-    target.Draw(mShape);
+    target.draw(mShape);
 }
 
 void StaticRect::SetCorner1(const sf::Vector2f& pos)
@@ -97,8 +97,8 @@ void StaticRect::UpdateShape()
     sf::Vector2f size = mCorner2 - mCorner1;
     sf::Vector2f center = mCorner1 + 0.5f * size ;
     mShape = sf::Shape::Rectangle(-size.x/2, -size.y/2, size.x, size.y, mColor, Constants::STATICRECT_BORDERSIZE, mColor);
-    mShape.SetPosition(center);
-    mShape.EnableFill(false);
+    mShape.setPosition(center);
+	mShape.setOutlineColor(sf::Color(0, 0, 0, 0));
 
     CreateBody(b2Vec2(center.x, center.y));
     CreateFixture(std::abs(size.x/2), std::abs(size.y/2));

@@ -11,7 +11,7 @@ class Level;
 
     Since in Editor-Mode every object needs to be drawn, I simply make them all drawable. Also keeps things simpler and prevents diamonds of death (PhysicalObject and DrawableObject)
 **/
-class Object : public sf::Drawable
+class Object : public sf::Drawable, public sf::Transformable
 {
     public:
         virtual ~Object();

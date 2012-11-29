@@ -27,6 +27,7 @@ class Player : public Object
         void Stop();
 
     private:
+		void setPosition(); //renamed in SFML to this - not implementing this so I get an error if I accidentally call it
         virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
         b2Body* mBody;
         sf::Shape mRepresentative;
