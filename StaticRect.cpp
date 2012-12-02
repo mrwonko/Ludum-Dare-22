@@ -69,9 +69,10 @@ const bool StaticRect::Deserialize(std::istream& stream)
     return true;
 }
 
-void StaticRect::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void StaticRect::draw (sf::RenderTarget &target, sf::RenderStates states) const
 {
-    target.draw(mShape);
+	states.transform *= getTransform();
+    target.draw(mShape, states);
 }
 
 void StaticRect::SetCorner1(const sf::Vector2f& pos)
@@ -94,11 +95,16 @@ void StaticRect::SetColor(const sf::Color& color)
 
 void StaticRect::UpdateShape()
 {
-    sf::Vector2f size = mCorner2 - mCorner1;
-    sf::Vector2f center = mCorner1 + 0.5f * size ;
-    mShape = sf::Shape::Rectangle(-size.x/2, -size.y/2, size.x, size.y, mColor, Constants::STATICRECT_BORDERSIZE, mColor);
-    mShape.setPosition(center);
-	mShape.setOutlineColor(sf::Color(0, 0, 0, 0));
+	sf::Vector2f corner1( std::min( mCorner1.x, mCorner2.x ), std::min( mCorner1.y, mCorner2.y ) );
+	sf::Vector2f corner2( std::max( mCorner1.x, mCorner2.x ), std::max( mCorner1.y, mCorner2.y ) );
+    sf::Vector2f size = corner2 - corner1;
+    sf::Vector2f center = corner1 + 0.5f * size ;
+	mShape = sf::RectangleShape( sf::Vector2f( size.x, size.y ) );
+	mShape.setOrigin( size.x/2, size.y/2 );
+	mShape.setFillColor( sf::Color(0, 0, 0, 0) );
+	mShape.setOutlineThickness( Constants::STATICRECT_BORDERSIZE );
+	mShape.setOutlineColor( mColor );
+    mShape.setPosition( center );
 
     CreateBody(b2Vec2(center.x, center.y));
     CreateFixture(std::abs(size.x/2), std::abs(size.y/2));

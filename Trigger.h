@@ -18,7 +18,7 @@ class Trigger : public StaticRect
 
         Trigger(Level* const level);
         virtual void Update(unsigned int deltaT_msec);
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+        virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
         virtual void UpdateShape();
 
         bool mIsSensor;

@@ -62,9 +62,12 @@ int main()
     winnerText.setFont(g_Font);
     winnerText.setString("You win!");
     winnerText.setCharacterSize(200.f);
-    sf::FloatRect textRec = winnerText.getRect();
+	sf::FloatRect textRec = winnerText.getGlobalBounds();
     winnerText.setPosition(-textRec.width / 2.f, -textRec.height / 2.f);
     winnerText.setColor(sf::Color::White);
+
+	sf::Clock clock;
+	sf::Int32 lastFrametime = 0;
 
     bool inFocus = true;
     while(window.isOpen())
@@ -195,12 +198,15 @@ int main()
         }
 
         //  Game Logic
-        unsigned int frametime = std::min(window.GetFrameTime(), sf::Uint32(66)); //less than 15 fps may be bad.
+		sf::Int32 frametime = clock.getElapsedTime().asMilliseconds();
+		sf::Int32 deltaT = frametime - lastFrametime;
+		deltaT = std::min(deltaT, sf::Int32(66)); //less than 15 fps may be bad.
+		lastFrametime = frametime;
         if(inFocus) //no update when inactive
         {
             if(curLevel != NULL)
             {
-                curLevel->Update(frametime);
+                curLevel->Update(deltaT);
             }
         }
         else

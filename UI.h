@@ -20,7 +20,7 @@ class UI : public sf::Drawable
         UIElement* GetElement(const std::string& name);
 
     private:
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+		virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
 
         typedef std::map<std::string, UIElement*> ElementMap;
         ElementMap mElements;

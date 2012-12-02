@@ -30,10 +30,9 @@ class sfmlBox2DDebugDraw : public sf::Drawable, public b2Draw
     private:
         b2World* mWorld;
         sf::RenderTarget* mTarget;
-        sf::Renderer* mRenderer;
+        sf::RenderStates mStates;
 
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
-        void ProcessVertex(const sf::Vector2f& pos);
+		virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
 };
 
 #endif // SFMLBOX2DDEBUGDRAW_H

@@ -19,7 +19,7 @@ class ParticleSystem : public sf::Drawable
 
         void Clear();
     private:
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+		virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
         typedef std::list<Particle*> ParticleList;
         ParticleList mParticles;
 };

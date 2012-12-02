@@ -1,6 +1,9 @@
 #include "MovableRect.h"
 #include "Level.h"
 #include <Box2D/Box2D.h>
+#ifndef M_PI
+#    define M_PI 3.14159265358979323846
+#endif
 
 MovableRect::MovableRect(Level * const level):
     StaticRect(level)
@@ -51,7 +54,7 @@ void MovableRect::Update(unsigned int deltaT_msec)
 {
     if(mBody->IsAwake())
     {
-        mShape.SetPosition(mBody->GetPosition().x, mBody->GetPosition().y);
-        mShape.SetRotation(180.f / M_PI * mBody->GetAngle());
+        mShape.setPosition(mBody->GetPosition().x, mBody->GetPosition().y);
+        mShape.setRotation(180.f / M_PI * mBody->GetAngle());
     }
 }

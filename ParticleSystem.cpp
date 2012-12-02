@@ -54,9 +54,8 @@ void ParticleSystem::Update(unsigned int deltaT_msec)
     }
 }
 
-void ParticleSystem::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void ParticleSystem::draw (sf::RenderTarget &target, sf::RenderStates states) const
 {
-	sf::RenderStates states;
 	states.blendMode = sf::BlendAdd;
     for(ParticleList::const_iterator it = mParticles.begin(); it != mParticles.end(); ++it)
     {

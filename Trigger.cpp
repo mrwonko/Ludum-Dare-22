@@ -14,11 +14,12 @@ Trigger::~Trigger()
     //dtor
 }
 
-void Trigger::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void Trigger::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if(mLevel->InEditMode())
     {
-        target.Draw(mShape);
+		states.transform *= getTransform();
+        target.draw(mShape, states);
     }
 }
 
@@ -26,9 +27,10 @@ void Trigger::UpdateShape()
 {
     sf::Vector2f size = mCorner2 - mCorner1;
     sf::Vector2f center = mCorner1 + 0.5f * size ;
-    mShape = sf::Shape::Rectangle(mCorner1.x, mCorner1.y, size.x, size.y, mColor);
-    mShape.EnableFill(true);
-    mShape.EnableOutline(false);
+	mShape = sf::RectangleShape( size );
+	mShape.setFillColor( mColor );
+	mShape.setPosition( mCorner1 );
+	mShape.setOutlineThickness( 0 );
     if(!mBody)
     {
         b2BodyDef def;

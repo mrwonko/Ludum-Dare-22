@@ -22,6 +22,13 @@ set(SOURCE_FILES
 	"UIText.cpp"
 	"main.cpp"
 	"sfmlBox2DDebugDraw.cpp"
+	"Trigger.cpp"
+	"TriggerKill.cpp"
+	"TriggerLevelchange.cpp"
+	"EditAction_NewLevelchange.cpp"
+	"EditAction_NewMovableRect.cpp"
+	"EditAction_NewKiller.cpp"
+	"MovableRect.cpp"
 	)
 set(HEADER_FILES
 	"Constants.h"
@@ -45,6 +52,13 @@ set(HEADER_FILES
 	"UIElement.h"
 	"UIText.h"
 	"sfmlBox2DDebugDraw.h"
+	"Trigger.h"
+	"TriggerKill.h"
+	"TriggerLevelchange.h"
+	"EditAction_NewLevelchange.h"
+	"EditAction_NewMovableRect.h"
+	"EditAction_NewKiller.h"
+	"MovableRect.h"
 	)
 
 add_executable(MiniBlueBoxBoy ${SOURCE_FILES} ${HEADER_FILES})
@@ -56,7 +70,7 @@ add_definitions(-Wall)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 
 # search SFML modules
-find_package(SFML 2 REQUIRED system window graphics)
+find_package(SFML 2 REQUIRED system window graphics audio )
 
 # find Box2D
 find_path(BOX2D_INCLUDE_DIR Box2D/Box2D.h

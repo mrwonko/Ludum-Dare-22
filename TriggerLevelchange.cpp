@@ -19,17 +19,14 @@ void TriggerLevelchange::OnEnter()
     mLevel->Win();
 }
 
-void TriggerLevelchange::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
-{
-    //blinking looks ugly
-    //if(mBlinkTime < Constants::LEVELCHANGE_BLINKTIME || mLevel->InEditMode())
-    {
-        target.Draw(mShape);
-    }
-}
-
 void TriggerLevelchange::Update(unsigned int deltaT_msec)
 {
     Trigger::Update(deltaT_msec);
     mBlinkTime = (mBlinkTime + deltaT_msec) % (2 * Constants::LEVELCHANGE_BLINKTIME);
+}
+
+void TriggerLevelchange::draw(sf::RenderTarget &target, sf::RenderStates states) const
+{
+	states.transform *= getTransform();
+    target.draw(mShape, states);
 }

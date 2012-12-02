@@ -12,7 +12,7 @@ class TriggerKill : public Trigger
         virtual const std::string GetType() const { return "TriggerKill"; }
     protected:
         virtual void OnEnter();
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 };
 
 #endif // TRIGGERKILL_H

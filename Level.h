@@ -82,7 +82,7 @@ class Level : public sf::Drawable, public EventListener
         const bool Deserialize(std::istream& stream);
 
         /// SFML Rendering function
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+		virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
 
         void SetupUIs();
         void SetupEditActions();

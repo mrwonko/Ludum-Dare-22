@@ -23,8 +23,8 @@ class UIText : public UIElement
 
     private:
         sf::Text mText;
-
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+		
+		virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
 };
 
 #endif // UITEXT_H

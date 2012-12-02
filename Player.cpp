@@ -9,10 +9,12 @@ extern sf::RenderWindow* g_Window;
 
 Player::Player(Level* const level):
     Object(level),
-    mRepresentative(sf::Shape::Rectangle(-Constants::PLAYER_HALFWIDTH, -Constants::PLAYER_HALFHEIGHT, 2 * Constants::PLAYER_HALFWIDTH, 2 * Constants::PLAYER_HALFHEIGHT, Constants::PLAYER_COLOR)),
+    mRepresentative(sf::RectangleShape( sf::Vector2f( 2 * Constants::PLAYER_HALFWIDTH, 2 * Constants::PLAYER_HALFHEIGHT ) ) ),
     mJumpedThisFrame(false),
     mNextMoveSparkTime(Constants::MOVESPARK_SPACING_MSEC)
 {
+	mRepresentative.setPosition( -Constants::PLAYER_HALFWIDTH, -Constants::PLAYER_HALFHEIGHT );
+	mRepresentative.setFillColor( Constants::PLAYER_COLOR );
     //ctor
     b2World& world = mLevel->GetWorld();
 
@@ -41,11 +43,12 @@ Player::~Player()
     //dtor
 }
 
-void Player::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void Player::draw (sf::RenderTarget &target, sf::RenderStates states) const
 {
+	states.transform *= getTransform();
     if(!mLevel->IsLost()) //Player explodes on death and is no longer rendered!
     {
-        target.draw(mRepresentative);
+        target.draw(mRepresentative, states);
     }
 }
 

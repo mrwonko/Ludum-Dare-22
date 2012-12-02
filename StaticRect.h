@@ -28,13 +28,13 @@ class StaticRect : public Object //, public EventListener //event listener: may 
     protected:
 		void setPosition(const sf::Vector2f&); //renamed in SFML to this - not implementing this so I get an error if I accidentally call it
         virtual void UpdateShape();
-
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+		
+		virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
 
         sf::Vector2f mCorner1;
         sf::Vector2f mCorner2;
 
-        sf::Shape mShape;
+        sf::RectangleShape mShape;
         unsigned int mColorIndex;
         sf::Color mColor;
         b2Body* mBody;

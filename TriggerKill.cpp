@@ -18,7 +18,8 @@ void TriggerKill::OnEnter()
     mLevel->Lose();
 }
 
-void TriggerKill::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void TriggerKill::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    target.Draw(mShape);
+	states.transform *= getTransform();
+    target.draw(mShape, states);
 }

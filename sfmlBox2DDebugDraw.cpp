@@ -1,14 +1,15 @@
 #include "sfmlBox2DDebugDraw.h"
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Renderer.hpp>
 #include <Box2d/Common/b2Math.h>
-#include <gl/gl.h>
 #include <cmath>
+#include <vector>
+#ifndef M_PI
+#    define M_PI 3.14159265358979323846
+#endif
 
 sfmlBox2DDebugDraw::sfmlBox2DDebugDraw():
     mWorld(NULL),
-    mTarget(NULL),
-    mRenderer(NULL)
+    mTarget(NULL)
 {
     //ctor
     SetFlags(e_shapeBit | e_jointBit | e_aabbBit);
@@ -30,12 +31,12 @@ void sfmlBox2DDebugDraw::SetWorld(b2World* newWorld)
     mWorld->SetDebugDraw(this);
 }
 
-void sfmlBox2DDebugDraw::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void sfmlBox2DDebugDraw::draw (sf::RenderTarget &target, sf::RenderStates states) const
 {
     //I need to hack around the const to be able to use these in the Box2D Callbacks.
     sfmlBox2DDebugDraw* unconstThis = const_cast<sfmlBox2DDebugDraw*>(this);
     unconstThis->mTarget = &target;
-    unconstThis->mRenderer = &renderer;
+	unconstThis->mStates = states;
 
     mWorld->DrawDebugData();
 }
@@ -57,29 +58,32 @@ namespace
 ///Draw a closed polygon provided in CCW order.
 void sfmlBox2DDebugDraw::DrawPolygon (const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
 {
-    glColor3f(color.r, color.g, color.b);
-    glBegin(GL_LINE_LOOP);
+	std::vector< sf::Vertex > sfVertices;
+	const sf::Color sfColor = ConvertColor( color );
+	sfVertices.reserve( vertexCount > 0 ? vertexCount + 1 : 0 );
     for(int32 i = 0; i < vertexCount; ++i)
     {
-        ProcessVertex(sf::Vector2f(vertices[i].x, vertices[i].y));
+		sfVertices.push_back( sf::Vertex( ConvertVector( vertices[i] ), sfColor ) );
     }
-    glEnd();
+	if( vertexCount > 0 )
+	{
+		sfVertices.push_back( sfVertices[ 0 ] );
+	}
+	mTarget->draw( sfVertices.data(), sfVertices.size(), sf::LinesStrip, mStates );
 }
 
 ///Draw a solid closed polygon provided in CCW order.
 void sfmlBox2DDebugDraw::DrawSolidPolygon (const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
 {
-    //I make them transparent.
-    sf::Color col = ConvertColor(color);
-    col.a = 127;
-    mRenderer->SetColor(col);
-    mRenderer->Begin(sf::Renderer::TriangleFan);
+	std::vector< sf::Vertex > sfVertices;
+	sf::Color sfColor = ConvertColor( color );
+	sfColor.a = 127;
+	sfVertices.reserve( vertexCount );
     for(int32 i = 0; i < vertexCount; ++i)
     {
-        mRenderer->AddVertex(vertices[i].x, vertices[i].y);
+		sfVertices.push_back( sf::Vertex( ConvertVector( vertices[i] ), sfColor ) );
     }
-    mRenderer->End();
-
+	mTarget->draw( sfVertices.data(), sfVertices.size(), sf::TrianglesFan, mStates );
 }
 
 static const int CIRCLE_ITERATIONS = 16;
@@ -87,52 +91,49 @@ static const int CIRCLE_ITERATIONS = 16;
 ///Draw a circle.
 void sfmlBox2DDebugDraw::DrawCircle (const b2Vec2 &center, float32 radius, const b2Color &color)
 {
-    glColor3f(color.r, color.g, color.b);
-    glBegin(GL_LINE_LOOP);
+	std::vector< sf::Vertex > sfVertices;
+	sf::Color sfColor = ConvertColor( color );
+	assert( CIRCLE_ITERATIONS > 0 );
+	sfVertices.reserve( CIRCLE_ITERATIONS + 1 );
     for(int32 i = 0; i < CIRCLE_ITERATIONS; ++i)
     {
         float rad = 2.f * M_PI * float(i) / float(CIRCLE_ITERATIONS);
         sf::Vector2f pos = ConvertVector(center) + radius * sf::Vector2f(cos(rad), sin(rad));
-        ProcessVertex(pos);
+		sfVertices.push_back( sf::Vertex( pos, sfColor ) );
     }
-    glEnd();
+	sfVertices.push_back( sfVertices[0] );
+	mTarget->draw( sfVertices.data(), sfVertices.size(), sf::LinesStrip, mStates );
 }
 
 ///Draw a solid circle.
 void sfmlBox2DDebugDraw::DrawSolidCircle (const b2Vec2 &center, float32 radius, const b2Vec2 &axis, const b2Color &color)
 {
-    //I make them transparent.
-    sf::Color col = ConvertColor(color);
-    col.a = 127;
-    mRenderer->SetColor(col);
-    mRenderer->Begin(sf::Renderer::TriangleFan);
+	std::vector< sf::Vertex > sfVertices;
+	sf::Color sfColor = ConvertColor( color );
+	sfColor.a = 127;
+	sfVertices.reserve( CIRCLE_ITERATIONS );
     for(int32 i = 0; i < CIRCLE_ITERATIONS; ++i)
     {
         float rad = 2.f * M_PI * float(i) / float(CIRCLE_ITERATIONS);
-        b2Vec2 pos = center + radius * b2Vec2(cos(rad), sin(rad));
-        mRenderer->AddVertex(pos.x, pos.y);
+        sf::Vector2f pos = ConvertVector(center) + radius * sf::Vector2f(cos(rad), sin(rad));
+		sfVertices.push_back( sf::Vertex( pos, sfColor ) );
     }
-    mRenderer->End();
+	mTarget->draw( sfVertices.data(), sfVertices.size(), sf::TrianglesFan, mStates );
 }
 
 ///Draw a line segment.
 void sfmlBox2DDebugDraw::DrawSegment (const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color)
 {
-    glColor3f(color.r, color.g, color.b);
-    glBegin(GL_LINES);
-    ProcessVertex(ConvertVector(p1));
-    ProcessVertex(ConvertVector(p2));
-    glEnd();
+	std::vector< sf::Vertex > sfVertices;
+	sf::Color sfColor = ConvertColor( color );
+	sfVertices.reserve( 2 );
+	sfVertices.push_back( sf::Vertex( ConvertVector( p1 ), sfColor ) );
+	sfVertices.push_back( sf::Vertex( ConvertVector( p2 ), sfColor ) );
+	mTarget->draw( sfVertices.data(), sfVertices.size(), sf::Lines, mStates );
 }
 
 void sfmlBox2DDebugDraw::DrawTransform (const b2Transform &xf)
 {
     static const b2Color col(1.f, 0.f, 0.f);
     DrawSegment(xf.p, xf.p + 2 * b2Vec2(xf.q.c, xf.q.s), col);
-}
-
-void sfmlBox2DDebugDraw::ProcessVertex(const sf::Vector2f& pos)
-{
-    sf::Vector2f pos2 = GetMatrix().Transform(pos);
-    glVertex2f(pos2.x, pos2.y);
 }

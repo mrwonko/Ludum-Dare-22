@@ -119,40 +119,40 @@ const bool Level::Deserialize(std::istream& stream)
     return true; // successfully finished
 }
 
-void Level::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void Level::draw (sf::RenderTarget &target, sf::RenderStates states) const
 {
     // Draw Elements
     for(std::list<Object*>::const_iterator it = mObjects.begin(); it != mObjects.end(); ++it)
     {
-        target.draw(**it);
+        target.draw(**it, states);
     }
 
     // Draw Player
-    target.draw(mPlayer);
+    target.draw(mPlayer, states);
 
     // Draw Particles
-    target.draw(mParticleSystem);
+    target.draw(mParticleSystem, states);
 
     // Draw Debug Physics Overlay
     if(mDebugPhysics)
     {
-        target.draw(mDebugDraw);
+        target.draw(mDebugDraw, states);
     }
 
     // Draw UI
     if(mEditMode)
     {
-        target.draw(mEditUI);
+        target.draw(mEditUI, states);
     }
     else
     {
         if(mStatus == ePlaying)
         {
-            target.draw(mGameUI);
+            target.draw(mGameUI, states);
         }
         else
         {
-            target.draw(mGameOverUI);
+            target.draw(mGameOverUI, states);
         }
     }
 }

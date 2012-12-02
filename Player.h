@@ -28,9 +28,9 @@ class Player : public Object
 
     private:
 		void setPosition(); //renamed in SFML to this - not implementing this so I get an error if I accidentally call it
-        virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+        virtual void draw (sf::RenderTarget &target, sf::RenderStates states) const;
         b2Body* mBody;
-        sf::Shape mRepresentative;
+        sf::RectangleShape mRepresentative;
         bool mJumpedThisFrame;
         sf::Sound mJumpChannel;
         float mNextMoveSparkTime; //time until next movespark is spawned

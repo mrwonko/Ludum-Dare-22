@@ -15,7 +15,8 @@ UIText::~UIText()
     //dtor
 }
 
-void UIText::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void UIText::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    target.draw(mText);
+	states.transform *= getTransform();
+    target.draw(mText, states);
 }

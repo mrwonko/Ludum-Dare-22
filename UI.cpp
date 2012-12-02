@@ -51,7 +51,7 @@ namespace
     }
 }
 
-void UI::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void UI::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     //save old view (gamefield) and create new one (UI space)
     sf::View oldView = target.getView();
@@ -64,7 +64,7 @@ void UI::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
     {
         UIElement& element = *(it->second);
         element.setPosition(CalculateActualPosition(dimensions, element.GetCoordinates()));
-        target.draw(element);
+        target.draw(element, states);
     }
 
     //revert old view
